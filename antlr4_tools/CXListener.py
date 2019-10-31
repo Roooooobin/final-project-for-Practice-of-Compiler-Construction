@@ -1,8 +1,9 @@
 # Generated from CX.g4 by ANTLR 4.7.2
+from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .CXParser import CXParser
 else:
-    from antlr4_tools.CXParser import CXParser
+    from CXParser import CXParser
 
 # This class defines a complete listener for a parse tree produced by CXParser.
 class CXListener(ParseTreeListener):

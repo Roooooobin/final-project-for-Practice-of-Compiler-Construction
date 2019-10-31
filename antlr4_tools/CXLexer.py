@@ -1,5 +1,5 @@
 # Generated from CX.g4 by ANTLR 4.7.2
-from antlr4_tools import *
+from antlr4 import *
 from io import StringIO
 from typing.io import TextIO
 import sys
@@ -177,7 +177,7 @@ class CXLexer(Lexer):
     FALSE = 42
     NUM = 43
     INT = 44
-    ID = 45
+    IDENTIFIER = 45
     COMMENT = 46
     WHITESPACE = 47
     NEWLINE = 48
@@ -202,7 +202,8 @@ class CXLexer(Lexer):
             "LSQUAREBRACKET", "MINUS", "NOT", "NOTEQUAL", "OR", "PLUS", 
             "RBRACE", "RETURN", "RPAREN", "RSQUAREBRACKET", "SEMICOLON", 
             "SLASH", "SQUOTE", "STAR", "TYPEDEF", "VOID", "WHILE", "TRUE", 
-            "FALSE", "NUM", "INT", "ID", "COMMENT", "WHITESPACE", "NEWLINE" ]
+            "FALSE", "NUM", "INT", "IDENTIFIER", "COMMENT", "WHITESPACE", 
+            "NEWLINE" ]
 
     ruleNames = [ "AMPERSAND", "AND", "ASSIGN", "BEGINCOMMENT", "BEGININLINECOMMENT", 
                   "BREAK", "COMMA", "CONST", "CONTINUE", "DQUOTE", "DOT", 
@@ -211,8 +212,8 @@ class CXLexer(Lexer):
                   "LPAREN", "LSQUAREBRACKET", "MINUS", "NOT", "NOTEQUAL", 
                   "OR", "PLUS", "RBRACE", "RETURN", "RPAREN", "RSQUAREBRACKET", 
                   "SEMICOLON", "SLASH", "SQUOTE", "STAR", "TYPEDEF", "VOID", 
-                  "WHILE", "TRUE", "FALSE", "NUM", "INT", "ID", "COMMENT", 
-                  "WHITESPACE", "NEWLINE" ]
+                  "WHILE", "TRUE", "FALSE", "NUM", "INT", "IDENTIFIER", 
+                  "COMMENT", "WHITESPACE", "NEWLINE" ]
 
     grammarFileName = "CX.g4"
 

@@ -13,33 +13,32 @@ statement
 | LBRACE statement* RBRACE
 | WHILE LPAREN expression RPAREN statement
 | FOR LPAREN expression? SEMICOLON expression? SEMICOLON expression? RPAREN statement
-| basetype ID LPAREN (VOID|basetype ID? (COMMA basetype ID?)*)? RPAREN (SEMICOLON|LBRACE statement* RBRACE)
+| basetype IDENTIFIER LPAREN (VOID|basetype IDENTIFIER? (COMMA basetype IDENTIFIER?)*)? RPAREN (SEMICOLON|LBRACE statement* RBRACE)
 ;
 
 
 expression
 : TRUE|FALSE|NUM
-| ID LPAREN (expression (COMMA expression)*)? RPAREN
+| IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN
 | variable ASSIGN expression
 | variable
-| basetype ID (COMMA ID)+ (ASSIGN expression)?
-| (MINUS|NOT|AMPERSAND|STAR) expression|variable
+| basetype IDENTIFIER (COMMA IDENTIFIER)+ (ASSIGN expression)?
+| (MINUS|NOT) expression|variable
 | LPAREN expression RPAREN
 | expression (EQUAL|NOTEQUAL|GREATERTHAN|LESSTHAN|LESSTHANOREQUAL|GREATERTHANOREQUAL) expression
 | expression (AND|OR) expression
 | expression LSQUAREBRACKET expression RSQUAREBRACKET
 | variable (PLUS PLUS|MINUS MINUS)
-| expression (STAR|SLASH) expression
 | expression (PLUS|MINUS) expression
 ;
 
 // variable only support identifier
-variable: ID;
+variable: IDENTIFIER;
 
 
 basetype
 : CONST basetype
-| (VOID|ID)
+| (VOID|IDENTIFIER)
 ;
 
 
@@ -94,7 +93,7 @@ INT: '0' | [1-9][0-9]*;
 
 // A legal CX identifier begins with a letter from the alphabet
 // and may be followed by alphanumeric characters, including the underscore.
-ID: [a-zA-Z][a-zA-Z0-9]*;
+IDENTIFIER: [a-zA-Z][a-zA-Z0-9]*;
 
 // Skip comments /* to start and */ to end the comments
 COMMENT: BEGINCOMMENT .*? ENDCOMMENT  -> skip;
