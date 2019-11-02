@@ -14,4 +14,6 @@ if __name__ == "__main__":
     symbol_table = SymbolTable()
     ast = ASTBuilder(file, symbol_table)
     ast = ast.build()
-    ast.compile()
+    print(ast.statements)
+    compiled_codes = ast.compile()
+    print(compiled_codes)

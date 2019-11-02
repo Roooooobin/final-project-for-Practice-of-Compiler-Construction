@@ -18,7 +18,7 @@ class BreakStatement(Statement):
         return "Break\n"
 
     def compile(self):
-        return "ujp" + self.symbol.getEndLoop() + "\n"
+        return "ujp" + self.symbol.get_end_loop() + "\n"
 
     def serialize(self, level):
         output = padding(level) + "BreakStatement\n"

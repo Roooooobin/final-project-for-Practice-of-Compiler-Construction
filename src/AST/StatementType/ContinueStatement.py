@@ -15,7 +15,7 @@ class ContinueStatement(Statement):
         return "Continue\n"
 
     def compile(self):
-        return "ujp " + self.symbol.getBeginLoop() + "\n"
+        return "ujp " + self.symbol.get_begin_loop() + "\n"
 
     def serialize(self, level):
         output = padding(level) + "ContinueStatement\n"

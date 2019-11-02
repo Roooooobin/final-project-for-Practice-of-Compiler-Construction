@@ -177,14 +177,14 @@ class ASTBuilder:
         if tree.getChildCount() == 1:
             # 只有一个孩子，说明是直接调用的，去符号表中找
             identifier = tree.getChild(0).getText()
-            symbol = self.symbol.getSymbol(identifier)
+            symbol = self.symbol.get_symbol(identifier)
             return VariableCallExpression(symbol)
         elif tree.getChildCount() == 2:
             # 变量声明语句
             basetype = self.build_type(tree.getChild(0))
             identifier = tree.getChild(1).getText()
             # Register in Symbol Table
-            symbol = self.symbol.registerSymbol(identifier, basetype)
+            symbol = self.symbol.register_symbol(identifier, basetype)
             return VariableDefineExpression(symbol)
         else:
             raise RuntimeError("Invalid Variable Expression: '" + tree.getText() + "'")
