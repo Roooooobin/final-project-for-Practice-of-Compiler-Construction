@@ -7,6 +7,8 @@
 from antlr4 import *
 
 from src.AST.ExpressionType.ArithmeticExpression import ArithmeticExpression
+from src.AST.ExpressionType.AssignExpression import AssignExpression
+from src.AST.ExpressionType.ConstantExpression import ConstantExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
 from src.AST.ExpressionType.VariableDefineExpression import VariableDefineExpression
 from src.AST.Program import Program
@@ -99,9 +101,9 @@ class ASTBuilder:
             2. TRUE|FALSE|NUM
             """
             token = tree.getChild(0).getPayload()
-            if not isinstance(token, Token):    # 如果是一个token，则是identifier
+            if not isinstance(token, Token):  # 如果是一个token，则是identifier
                 return self.build_variable_expression(tree.getChild(0))
-            else:   # 否则是常量
+            else:  # 否则是常量
                 return self.build_constant_expression(tree)
         elif tree.getChildCount() == 2:
             """
@@ -131,13 +133,16 @@ class ASTBuilder:
             token0 = tree.getChild(0).getPayload()
             token1 = tree.getChild(1).getPayload()
             token2 = tree.getChild(2).getPayload()
-            if isinstance(token1, Token) and isinstance(token2, Token) and token1.type == CXLexer.PLUS and token2.type == CXLexer.PLUS:
+            if isinstance(token1, Token) and isinstance(token2,
+                                                        Token) and token1.type == CXLexer.PLUS and token2.type == CXLexer.PLUS:
                 # variable (PLUS PLUS)|(MINUS MINUS)
                 return self.build_increment_expression(tree)
-            elif isinstance(token1, Token) and isinstance(token2, Token) and token1.type == CXLexer.MINUS and token2.type == CXLexer.MINUS:
+            elif isinstance(token1, Token) and isinstance(token2,
+                                                          Token) and token1.type == CXLexer.MINUS and token2.type == CXLexer.MINUS:
                 # variable (PLUS PLUS)|(MINUS MINUS)
                 return self.build_decrement_expression(tree)
-            elif isinstance(token0, Token) and isinstance(token2, Token) and token0.type == CXLexer.LPAREN and token2.type == CXLexer.RPAREN:
+            elif isinstance(token0, Token) and isinstance(token2,
+                                                          Token) and token0.type == CXLexer.LPAREN and token2.type == CXLexer.RPAREN:
                 # ( expression )
                 return self.build_expression(tree.getChild(1))
             elif isinstance(token1, Token):
@@ -189,8 +194,32 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid Variable Expression: '" + tree.getText() + "'")
 
+    def build_assignment_expression(self, tree):
+        if tree.getChildCount() != 3:
+            raise RuntimeError("Invalid Assignment Expression: '{}'".format(tree.getText()))
+        # 孩子必须为3，中间的符号必须为等号（即赋值符号）
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.ASSIGN:
+            raise RuntimeError("Invalid Assignment Expression: '{}'".format(tree.getText()))
+        # 将identifier和“值”传入AssignmentExpression
+        return AssignExpression(self.build_variable_expression(tree.getChild(0)),
+                                self.build_expression(tree.getChild(2)))
+
     def build_constant_expression(self, tree):
-        pass
+        if tree.getChildCount() != 1:
+            raise RuntimeError("Invalid ConstantExpression: '{}'".format(tree.getText()))
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token):
+            raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
+        # 根据常量类型做相应操作
+        if token.type == CXLexer.TRUE:
+            return ConstantExpression(True, "bool")
+        elif token.type == CXLexer.FALSE:
+            return ConstantExpression(False, "bool")
+        elif token.type == CXLexer.NUM:
+            return ConstantExpression(int(tree.getChild(0).getText()), 'int')
+        else:
+            raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
     def build_negative_expression(self, tree):
         pass
@@ -202,9 +231,6 @@ class ASTBuilder:
         pass
 
     def build_decrement_expression(self, tree):
-        pass
-
-    def build_assignment_expression(self, tree):
         pass
 
     def build_arithmetic_expression(self, tree):
