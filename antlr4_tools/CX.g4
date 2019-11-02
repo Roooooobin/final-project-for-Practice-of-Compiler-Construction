@@ -29,11 +29,15 @@ expression
 | expression (AND|OR) expression
 | expression LSQUAREBRACKET expression RSQUAREBRACKET
 | variable (PLUS PLUS|MINUS MINUS)
+| expression (STAR|SLASH) expression
 | expression (PLUS|MINUS) expression
 ;
 
 // variable only support identifier
-variable: IDENTIFIER;
+variable: 
+IDENTIFIER
+| basetype IDENTIFIER
+;
 
 
 basetype
@@ -87,8 +91,7 @@ WHILE: 'while';
 // only support bool and int
 TRUE: 'true';
 FALSE: 'false';
-NUM: INT;
-INT: '0' | [1-9][0-9]*;
+NUM: '0' | [1-9][0-9]*;
 
 
 // A legal CX identifier begins with a letter from the alphabet

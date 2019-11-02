@@ -86,7 +86,7 @@ class ASTBuilder:
             else:
                 if not isinstance(token2, Token):
                     raise RuntimeError("Invalid Statement: '{}'".format(tree.getText()))
-                if token.type == CXLexer.SEMICOLON:
+                if token2.type == CXLexer.SEMICOLON:
                     return self.build_expression(tree.getChild(0))
                 else:
                     raise RuntimeError("Invalid Statement: '" + tree.getText() + "'")
