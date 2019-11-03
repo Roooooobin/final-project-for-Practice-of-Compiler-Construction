@@ -26,7 +26,6 @@ class ArithmeticExpression(Expression):
         if not isinstance(self.right_expression.basetype, IntegerType):
             raise RuntimeError("Right side of arithmetic expression should be an integer but now it is a: "
                                + str(type(self.right_expression.basetype)))
-
         # set the type of this expression
         self.basetype = self.left_expression.basetype
 
@@ -34,12 +33,18 @@ class ArithmeticExpression(Expression):
         return str(self.left_expression) + " " + str(self.operation) + " " + str(self.right_expression)
 
     def compile(self):
-        # TODO: mod待写
-        operations = {"+": "add", "-": "sub", "/": "div", "*": "mul", "%": "mod"}
-        code = self.left_expression.compile()
-        code += self.right_expression.compile()
-        code += operations[self.operation] + " " + self.basetype.get_pcode() + "\n"
-
+        operations = {"+": "add", "-": "sub", "/": "div", "*": "mul"}
+        left_compiled = self.left_expression.compile()
+        right_compiled = self.right_expression.compile()
+        if self.operation in ["+", "-", "/", "*"]:
+            code = left_compiled + right_compiled
+            code += "{} {}\n".format(operations[self.operation], self.basetype.get_pcode())
+        elif self.operation == "%":
+            # 求余的实现a % b = a - a / b * b，转为一个后缀式表示
+            code = "{lc}{lc}{rc}div {c}\n{rc}mul {c}\nsub {c}\n".format(
+                    lc=left_compiled, rc=right_compiled, c=self.basetype.get_pcode())
+        else:
+            code = None
         return code
 
     def serialize(self, level):

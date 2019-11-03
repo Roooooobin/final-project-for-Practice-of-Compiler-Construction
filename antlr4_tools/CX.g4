@@ -14,23 +14,24 @@ statement
 | WHILE LPAREN expression RPAREN statement
 | FOR LPAREN expression? SEMICOLON expression? SEMICOLON expression? RPAREN statement
 | basetype IDENTIFIER LPAREN (VOID|basetype IDENTIFIER? (COMMA basetype IDENTIFIER?)*)? RPAREN (SEMICOLON|LBRACE statement* RBRACE)
+| basetype IDENTIFIER (COMMA IDENTIFIER)+ (ASSIGN expression)?
 ;
 
 
 expression
 : TRUE|FALSE|NUM
 | IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN
-| variable ASSIGN expression
 | variable
-| basetype IDENTIFIER (COMMA IDENTIFIER)+ (ASSIGN expression)?
-| (MINUS|NOT) expression|variable
+| variable ASSIGN expression
+| (MINUS|NOT|ODD) expression|variable
 | LPAREN expression RPAREN
 | expression (EQUAL|NOTEQUAL|GREATERTHAN|LESSTHAN|LESSTHANOREQUAL|GREATERTHANOREQUAL) expression
-| expression (AND|OR) expression
+| expression (AND|OR|XOR) expression
 | expression LSQUAREBRACKET expression RSQUAREBRACKET
 | variable (PLUS PLUS|MINUS MINUS)
 | expression (STAR|SLASH) expression
 | expression (PLUS|MINUS) expression
+| expression MOD expression
 ;
 
 // variable only support identifier
@@ -49,6 +50,7 @@ basetype
 // the reserved keywords/tokens for this compiler
 AMPERSAND: '&';
 AND: '&&';
+XOR: '^';
 ASSIGN: '=';
 BEGINCOMMENT: '/*';
 BEGININLINECOMMENT: '//';
@@ -84,9 +86,11 @@ SEMICOLON: ';';
 SLASH: '/';
 SQUOTE: '\'';
 STAR: '*';
+MOD: '%';
 TYPEDEF: 'typedef';
 VOID: 'void';
 WHILE: 'while';
+ODD: 'odd';
 
 // only support bool and int
 TRUE: 'true';

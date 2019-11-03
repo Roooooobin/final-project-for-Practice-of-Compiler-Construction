@@ -14,6 +14,7 @@ from src.AST.ExpressionType.ConstantExpression import ConstantExpression
 from src.AST.ExpressionType.DecrementExpression import DecrementExpression
 from src.AST.ExpressionType.IncrementExpression import IncrementExpression
 from src.AST.ExpressionType.ComparisonExpression import ComparisonExpression
+from src.AST.ExpressionType.LogicExpression import LogicExpression
 from src.AST.ExpressionType.NegativeExpression import NegativeExpression
 from src.AST.ExpressionType.NotExpression import NotExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
@@ -161,6 +162,8 @@ class ASTBuilder:
                     return self.build_arithmetic_expression(tree)
                 elif token1.type == CXLexer.SLASH:
                     return self.build_arithmetic_expression(tree)
+                elif token1.type == CXLexer.MOD:
+                    return self.build_arithmetic_expression(tree)
                 elif token1.type == CXLexer.EQUAL:
                     return self.build_comparison_expression(tree)
                 elif token1.type == CXLexer.NOTEQUAL:
@@ -273,6 +276,8 @@ class ASTBuilder:
             return ArithmeticExpression(left_expression, right_expression, "+")
         elif token.type == CXLexer.MINUS:
             return ArithmeticExpression(left_expression, right_expression, "-")
+        elif token.type == CXLexer.MOD:
+            return ArithmeticExpression(left_expression, right_expression, "%")
         else:
             raise RuntimeError("Invalid ArithmeticExpression: '" + tree.getText() + "'")
 
@@ -303,7 +308,23 @@ class ASTBuilder:
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
 
     def build_logic_expression(self, tree):
-        pass
+        if tree.getChildCount() != 3:
+            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token):
+            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+
+        left_expression = self.build_expression(tree.getChild(0))
+        right_expression = self.build_expression(tree.getChild(2))
+
+        if token.type == CXLexer.AND:
+            return LogicExpression(left_expression, right_expression, "&&")
+        elif token.type == CXLexer.OR:
+            return LogicExpression(left_expression, right_expression, "||")
+        elif token.type == CXLexer.XOR:
+            return LogicExpression(left_expression, right_expression, "^")
+        else:
+            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
 
     def build_compound_statement(self, tree):
         pass
