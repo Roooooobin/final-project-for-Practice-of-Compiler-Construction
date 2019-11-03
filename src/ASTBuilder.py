@@ -14,6 +14,8 @@ from src.AST.ExpressionType.ConstantExpression import ConstantExpression
 from src.AST.ExpressionType.DecrementExpression import DecrementExpression
 from src.AST.ExpressionType.IncrementExpression import IncrementExpression
 from src.AST.ExpressionType.ComparisonExpression import ComparisonExpression
+from src.AST.ExpressionType.NegativeExpression import NegativeExpression
+from src.AST.ExpressionType.NotExpression import NotExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
 from src.AST.ExpressionType.VariableDefineExpression import VariableDefineExpression
 from src.AST.Program import Program
@@ -225,10 +227,24 @@ class ASTBuilder:
             raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
     def build_negative_expression(self, tree):
-        pass
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
+
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.MINUS:
+            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
+
+        return NegativeExpression(self.build_expression(tree.getChild(1)))
 
     def build_not_expression(self, tree):
-        pass
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
+
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.NOT:
+            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
+
+        return NotExpression(self.build_expression(tree.getChild(1)))
 
     def build_increment_expression(self, tree):
         return IncrementExpression(self.build_variable_expression(tree.getChild(0)))
