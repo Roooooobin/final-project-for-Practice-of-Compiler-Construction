@@ -6,14 +6,17 @@
 """
 from antlr4 import *
 
+from antlr4_tools.CXLexer import CXLexer
+from antlr4_tools.CXParser import CXParser
 from src.AST.ExpressionType.ArithmeticExpression import ArithmeticExpression
 from src.AST.ExpressionType.AssignExpression import AssignExpression
 from src.AST.ExpressionType.ConstantExpression import ConstantExpression
+from src.AST.ExpressionType.DecrementExpression import DecrementExpression
+from src.AST.ExpressionType.IncrementExpression import IncrementExpression
+from src.AST.ExpressionType.ComparisonExpression import ComparisonExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
 from src.AST.ExpressionType.VariableDefineExpression import VariableDefineExpression
 from src.AST.Program import Program
-from antlr4_tools.CXLexer import CXLexer
-from antlr4_tools.CXParser import CXParser
 from src.AST.Statement import Statement
 from src.AST.StatementType.BreakStatement import BreakStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
@@ -133,13 +136,13 @@ class ASTBuilder:
             token0 = tree.getChild(0).getPayload()
             token1 = tree.getChild(1).getPayload()
             token2 = tree.getChild(2).getPayload()
-            if isinstance(token1, Token) and isinstance(token2,
-                                                        Token) and token1.type == CXLexer.PLUS and token2.type == CXLexer.PLUS:
-                # variable (PLUS PLUS)|(MINUS MINUS)
+            if isinstance(token1, Token) and isinstance(token2, Token) \
+                    and token1.type == CXLexer.PLUS and token2.type == CXLexer.PLUS:
+                # variable++
                 return self.build_increment_expression(tree)
-            elif isinstance(token1, Token) and isinstance(token2,
-                                                          Token) and token1.type == CXLexer.MINUS and token2.type == CXLexer.MINUS:
-                # variable (PLUS PLUS)|(MINUS MINUS)
+            elif isinstance(token1, Token) and isinstance(token2, Token) \
+                    and token1.type == CXLexer.MINUS and token2.type == CXLexer.MINUS:
+                # variable--
                 return self.build_decrement_expression(tree)
             elif isinstance(token0, Token) and isinstance(token2,
                                                           Token) and token0.type == CXLexer.LPAREN and token2.type == CXLexer.RPAREN:
@@ -228,10 +231,10 @@ class ASTBuilder:
         pass
 
     def build_increment_expression(self, tree):
-        pass
+        return IncrementExpression(self.build_variable_expression(tree.getChild(0)))
 
     def build_decrement_expression(self, tree):
-        pass
+        return DecrementExpression(self.build_variable_expression(tree.getChild(0)))
 
     def build_arithmetic_expression(self, tree):
         # expects 3 children
@@ -258,7 +261,30 @@ class ASTBuilder:
             raise RuntimeError("Invalid ArithmeticExpression: '" + tree.getText() + "'")
 
     def build_comparison_expression(self, tree):
-        pass
+        if tree.getChildCount() != 3:
+            raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
+
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token):
+            raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
+
+        left_expression = self.build_expression(tree.getChild(0))
+        right_expression = self.build_expression(tree.getChild(2))
+
+        if token.type == CXLexer.EQUAL:
+            return ComparisonExpression(left_expression, right_expression, "==")
+        elif token.type == CXLexer.NOTEQUAL:
+            return ComparisonExpression(left_expression, right_expression, "!=")
+        elif token.type == CXLexer.LESSTHAN:
+            return ComparisonExpression(left_expression, right_expression, "<")
+        elif token.type == CXLexer.GREATERTHAN:
+            return ComparisonExpression(left_expression, right_expression, ">")
+        elif token.type == CXLexer.LESSTHANOREQUAL:
+            return ComparisonExpression(left_expression, right_expression, "<=")
+        elif token.type == CXLexer.GREATERTHANOREQUAL:
+            return ComparisonExpression(left_expression, right_expression, ">=")
+        else:
+            raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
 
     def build_logic_expression(self, tree):
         pass

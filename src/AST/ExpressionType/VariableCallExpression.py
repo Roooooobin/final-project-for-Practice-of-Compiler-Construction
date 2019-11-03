@@ -20,7 +20,7 @@ class VariableCallExpression(Expression):
         return output
 
     def compile(self):
-        code = "lod " + str(self.symbol.basetype.getPcode()) + " 0 " + str(self.symbol.address) + "\n"
+        code = "lod " + str(self.symbol.basetype.get_pcode()) + " 0 " + str(self.symbol.address) + "\n"
         return code
 
     def serialize(self, level):
