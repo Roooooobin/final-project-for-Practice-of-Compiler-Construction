@@ -1,109 +1,157 @@
 grammar CX;
-
-
 program: statement*;
 
 statement
-: SEMICOLON
+: expressionstatement
+| compoundstatement
+| selectionstatement
+| iterationstatement
 | BREAK SEMICOLON
 | CONTINUE SEMICOLON
-| RETURN (expression|VOID)?
-| expression SEMICOLON
-| IF LPAREN expression RPAREN statement (ELSE statement)?
-| LBRACE statement* RBRACE
-| WHILE LPAREN expression RPAREN statement
-| FOR LPAREN expression? SEMICOLON expression? SEMICOLON expression? RPAREN statement
-| basetype IDENTIFIER LPAREN (VOID|basetype IDENTIFIER? (COMMA basetype IDENTIFIER?)*)? RPAREN (SEMICOLON|LBRACE statement* RBRACE)
-| basetype IDENTIFIER (COMMA IDENTIFIER)+ (ASSIGN expression)?
+| WRITE expression SEMICOLON
+| WRITELN expression SEMICOLON
+| basetype IDENTIFIER ASSIGN expression SEMICOLON
 ;
 
+compoundstatement: LEFTBRACE statement* RIGHTBRACE;
+
+expressionstatement: expression? SEMICOLON;
+
+selectionstatement: IF LEFTPARENTHESIS expression RIGHTPARENTHESIS statement (ELSE statement)?;
+
+iterationstatement
+: WHILE LEFTPARENTHESIS expression RIGHTPARENTHESIS statement
+| FOR LEFTPARENTHESIS expression? SEMICOLON expression? SEMICOLON expression? RIGHTPARENTHESIS statement
+| DO statement WHILE LEFTPARENTHESIS expression RIGHTPARENTHESIS SEMICOLON
+;
 
 expression
-: TRUE|FALSE|NUM
-| IDENTIFIER LPAREN (expression (COMMA expression)*)? RPAREN
-| variable
-| variable ASSIGN expression
-| (MINUS|NOT|ODD) expression|variable
-| LPAREN expression RPAREN
-| expression (EQUAL|NOTEQUAL|GREATERTHAN|LESSTHAN|LESSTHANOREQUAL|GREATERTHANOREQUAL) expression
-| expression (AND|OR|XOR) expression
-| expression LSQUAREBRACKET expression RSQUAREBRACKET
-| variable (PLUS PLUS|MINUS MINUS)
-| expression (STAR|SLASH) expression
-| expression (PLUS|MINUS) expression
-| expression MOD expression
+: assignmentexpression
 ;
 
-// variable only support identifier
-variable: 
-IDENTIFIER
-| basetype IDENTIFIER
+assignmentexpression
+: conditionalexpression
+| IDENTIFIER ASSIGN expression
 ;
 
+conditionalexpression
+: logicorexpression
+| logicorexpression QUESTIONMARK expression COLON conditionalexpression
+;
+
+logicorexpression
+: logicandexpression
+| logicorexpression OR logicandexpression
+;
+
+logicandexpression
+: logicxorexpression
+| logicandexpression AND logicxorexpression
+;
+
+logicxorexpression
+: equalityexpression
+| logicxorexpression XOR equalityexpression
+;
+
+equalityexpression
+: comparisonexpression
+| equalityexpression EQUAL comparisonexpression
+| equalityexpression NOTEQUAL comparisonexpression
+;
+
+comparisonexpression
+: additiveexpression
+| comparisonexpression LESSTHAN additiveexpression
+| comparisonexpression GREATERTHAN additiveexpression
+| comparisonexpression LESSTHANOREQUAL additiveexpression
+| comparisonexpression GREATERTHANOREQUAL additiveexpression
+;
+
+additiveexpression
+: multiplicativeexpression
+| additiveexpression PLUS multiplicativeexpression
+| additiveexpression MINUS multiplicativeexpression
+;
+
+multiplicativeexpression
+: incrementalexpression
+| multiplicativeexpression STAR incrementalexpression
+| multiplicativeexpression SLASH incrementalexpression
+| multiplicativeexpression MOD incrementalexpression
+;
+
+incrementalexpression
+: primaryexpression
+| incrementalexpression PLUSPLUS
+| incrementalexpression MINUSMINUS
+;
+
+primaryexpression
+: IDENTIFIER
+| constant
+| LEFTPARENTHESIS expression RIGHTPARENTHESIS
+;
+
+constant: TRUE | FALSE | NUMBER;
 
 basetype
-: CONST basetype
-| (VOID|IDENTIFIER)
+: INT | BOOLEAN
 ;
 
-
-// the reserved keywords/tokens for this compiler
-AMPERSAND: '&';
-AND: '&&';
-XOR: '^';
-ASSIGN: '=';
-BEGINCOMMENT: '/*';
-BEGININLINECOMMENT: '//';
-BREAK: 'break';
-COMMA: ',';
-CONST: 'const';
-CONTINUE: 'continue';
-DQUOTE: '"';
-DOT: '.';
-ELSE: 'else';
-ENDCOMMENT: '*/';
-EQUAL: '==';
-FOR: 'for';
-GREATERTHAN: '>';
-GREATERTHANOREQUAL: '>=';
-IF: 'if';
-INCLUDE: '#include';
-LBRACE: '{';
-LESSTHAN: '<';
-LESSTHANOREQUAL: '<=';
-LPAREN: '(';
-LSQUAREBRACKET: '[';
-MINUS: '-';
-NOT: '!';
-NOTEQUAL: '!=';
-OR: '||';
-PLUS: '+';
-RBRACE: '}';
-RETURN: 'return';
-RPAREN: ')';
-RSQUAREBRACKET: ']';
-SEMICOLON: ';';
-SLASH: '/';
-SQUOTE: '\'';
-STAR: '*';
-MOD: '%';
-TYPEDEF: 'typedef';
-VOID: 'void';
-WHILE: 'while';
-ODD: 'odd';
-
-// only support bool and int
-TRUE: 'true';
-FALSE: 'false';
-NUM: '0' | [1-9][0-9]*;
-
-
-// A legal CX identifier begins with a letter from the alphabet
-// and may be followed by alphanumeric characters, including the underscore.
-IDENTIFIER: [a-zA-Z][a-zA-Z0-9]*;
-
-// Skip comments /* to start and */ to end the comments
-COMMENT: BEGINCOMMENT .*? ENDCOMMENT  -> skip;
+COMMENT
+: (BEGININLINECOMMENT .*? NEWLINE
+| BEGINCOMMENT .*? ENDCOMMENT) -> skip
+;
 
 WHITESPACE: (' '|'\t')+ -> skip;
-NEWLINE: '\r'? '\n'  -> skip;
+NEWLINE: '\r'? '\n' -> skip;
+
+WRITE: 'write';
+WRITELN: 'writeln';
+INT: 'int';
+BOOLEAN: 'bool';
+LEFTBRACE: '{';
+RIGHTBRACE: '}';
+SEMICOLON: ';';
+IF: 'if';
+DO: 'do';
+LEFTPARENTHESIS: '(';
+RIGHTPARENTHESIS: ')';
+ELSE: 'else';
+WHILE: 'while';
+FOR: 'for';
+TRUE: 'true';
+FALSE: 'false';
+ASSIGN: '=';
+PLUS: '+';
+MINUS: '-';
+STAR: '*';
+SLASH: '/';
+EQUAL: '==';
+NOTEQUAL: '!=';
+LESSTHAN: '<';
+GREATERTHAN: '>';
+LESSTHANOREQUAL: '<=';
+GREATERTHANOREQUAL: '>=';
+NOT: '!';
+AND: '&&';
+OR: '||';
+XOR: '^';
+BEGININLINECOMMENT: '//';
+BEGINCOMMENT: '/*';
+ENDCOMMENT: '*/';
+COMMA: ',';
+LEFTSHIFT: '<<';
+RIGHTSHIFT: '>>';
+QUESTIONMARK: '?';
+NUMBER: '0' | [1-9][0-9]*;
+COLON: ':';
+MOD: '%';
+ODD: 'odd';
+PLUSPLUS: '++';
+MINUSMINUS: '--';
+CONST: 'const';
+BREAK: 'break';
+CONTINUE: 'continue';
+IDENTIFIER: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
