@@ -1,0 +1,7 @@
+int x = 5;
+int factorial = 1;
+while(x != 0){
+	factorial = factorial * x;
+	x--;
+}
+writeln factorial

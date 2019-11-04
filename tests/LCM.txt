@@ -1,0 +1,14 @@
+int x, y;
+scanf("%d%d", &x, &y);
+int product = x * y;
+if(x > y){
+	x = x + y;
+	y = x - y;
+	x = x - y;
+}
+while(x != 0){
+	int tmp = x;
+	x = y % x;
+	y = tmp;
+}
+writeln (product / y);

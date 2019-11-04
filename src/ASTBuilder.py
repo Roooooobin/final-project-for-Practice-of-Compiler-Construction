@@ -24,6 +24,7 @@ from src.AST.Program import Program
 from src.AST.Statement import Statement
 from src.AST.StatementType.BreakStatement import BreakStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
+from src.AST.StatementType.WriteStatement import WriteStatement
 from src.Types.BooleanType import BooleanType
 from src.Types.IntegerType import IntegerType
 
@@ -61,23 +62,29 @@ class ASTBuilder:
         if tree.getChildCount() == 0:
             raise RuntimeError("Invalid Statement: '{}'".format(tree.getText()))
         token = tree.getChild(0).getPayload()
-        if token == CXLexer.BREAK:
+        if isinstance(token, Token) and token == CXLexer.BREAK:
             token1 = tree.getChild(1).getPayload()
             if token == CXLexer.BREAK:
                 if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                     return BreakStatement()
                 else:
                     RuntimeError("Wrong Break statement, error: '{}'".format(tree.getText()))
-        if token == CXLexer.CONTINUE:
+        if isinstance(token, Token) and token == CXLexer.CONTINUE:
             token1 = tree.getChild(1).getPayload()
             if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                 return ContinueStatement()
             else:
                 RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
-        if token == CXLexer.WRITE or token == CXLexer.WRITELN:
+        if isinstance(token, Token) and token.type == CXLexer.WRITE:
             token2 = tree.getChild(2).getPayload()
             if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
-                pass
+                return self.build_write_statement(tree)
+            else:
+                RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
+        if isinstance(token, Token) and token.type == CXLexer.WRITELN:
+            token2 = tree.getChild(2).getPayload()
+            if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
+                return self.build_writeln_statement(tree)
             else:
                 RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
         if tree.getChildCount() >= 2:
@@ -85,9 +92,7 @@ class ASTBuilder:
             if isinstance(token1, Token) and token1.type == CXLexer.IDENTIFIER:
                 return self.build_define_statement(tree)
         tree = tree.getChild(0)
-        print(type(tree))
         token = tree.getChild(0).getPayload()
-        print(type(token))
         if token == CXLexer.LEFTBRACE:
             # 遇见左大括号，那么生成复合语句
             return self.build_compound_statement(tree)
@@ -107,7 +112,7 @@ class ASTBuilder:
         if tree.getChildCount() == 2:
             return self.build_expression(tree.getChild(0))
 
-    # TODO: odd grammar definition, (expression)
+    # TODO: odd grammar definition, not, -
     def build_expression(self, tree):
         return self.build_assignment_expression(tree.getChild(0))
 
@@ -157,8 +162,11 @@ class ASTBuilder:
         identifier = tree.getChild(1).getText()
         # Register in Symbol Table
         symbol = self.symbol.register_symbol(identifier, basetype)
-        define = VariableDefineExpression(symbol)
-        return AssignExpression(define, self.build_expression(tree.getChild(3)))
+        define_var = VariableDefineExpression(symbol)
+        if tree.getChildCount() == 3:
+            return AssignExpression(define_var, ConstantExpression(0, "int"))
+        else:
+            return AssignExpression(define_var, self.build_expression(tree.getChild(3)))
 
     def build_negative_expression(self, tree):
         if tree.getChildCount() != 2:
@@ -359,7 +367,7 @@ class ASTBuilder:
             else:
                 return self.build_constant_expression(tree.getChild(0))
         elif tree.getChildCount() == 3:
-            token = tree.getChild(0)
+            token = tree.getChild(0).getPayload()
             if isinstance(token, Token) and token.type == CXLexer.LEFTPARENTHESIS:
                 # print(tree.getChild(1).getText())
                 return self.build_expression(tree.getChild(1))
@@ -376,7 +384,7 @@ class ASTBuilder:
         elif token.type == CXLexer.FALSE:
             return ConstantExpression(False, "bool")
         elif token.type == CXLexer.NUMBER:
-            return ConstantExpression(int(tree.getChild(0).getText()), 'int')
+            return ConstantExpression(int(tree.getChild(0).getText()), "int")
         else:
             raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
@@ -391,6 +399,14 @@ class ASTBuilder:
 
     def build_if_statement(self, tree):
         pass
+
+    def build_write_statement(self, tree):
+        write_expr = self.build_expression(tree.getChild(1))
+        return WriteStatement(write_expr, "write")
+
+    def build_writeln_statement(self, tree):
+        write_expr = self.build_expression(tree.getChild(1))
+        return WriteStatement(write_expr, "writeln")
 
     def build_type(self, tree):
         token = None

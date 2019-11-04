@@ -10,7 +10,7 @@ statement
 | CONTINUE SEMICOLON
 | WRITE expression SEMICOLON
 | WRITELN expression SEMICOLON
-| basetype IDENTIFIER ASSIGN expression SEMICOLON
+| basetype IDENTIFIER (ASSIGN expression)? SEMICOLON
 ;
 
 compoundstatement: LEFTBRACE statement* RIGHTBRACE;
@@ -85,6 +85,8 @@ incrementalexpression
 : primaryexpression
 | incrementalexpression PLUSPLUS
 | incrementalexpression MINUSMINUS
+| NOT primaryexpression
+| MINUS primaryexpression
 ;
 
 primaryexpression
