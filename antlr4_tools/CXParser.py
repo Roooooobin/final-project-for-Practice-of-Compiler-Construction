@@ -8,7 +8,7 @@ import sys
 
 def serializedATN():
     with StringIO() as buf:
-        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\63")
+        buf.write("\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3\64")
         buf.write("\u00be\4\2\t\2\4\3\t\3\4\4\t\4\4\5\t\5\4\6\t\6\3\2\7\2")
         buf.write("\16\n\2\f\2\16\2\21\13\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3")
         buf.write("\3\5\3\33\n\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3")
@@ -25,12 +25,12 @@ def serializedATN():
         buf.write("\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3\4")
         buf.write("\3\4\7\4\u00ae\n\4\f\4\16\4\u00b1\13\4\3\5\3\5\3\5\3\5")
         buf.write("\5\5\u00b7\n\5\3\6\3\6\3\6\5\6\u00bc\n\6\3\6\2\3\6\7\2")
-        buf.write("\4\6\b\n\2\b\3\2\34\35\6\2\21\21\23\24\30\31\36\36\4\2")
-        buf.write("\4\5\37\37\4\2&&((\4\2\34\34  \4\2++\60\60\2\u00e7\2\17")
-        buf.write("\3\2\2\2\4q\3\2\2\2\6\u0097\3\2\2\2\b\u00b6\3\2\2\2\n")
-        buf.write("\u00bb\3\2\2\2\f\16\5\4\3\2\r\f\3\2\2\2\16\21\3\2\2\2")
-        buf.write("\17\r\3\2\2\2\17\20\3\2\2\2\20\3\3\2\2\2\21\17\3\2\2\2")
-        buf.write("\22r\7%\2\2\23\24\7\t\2\2\24r\7%\2\2\25\26\7\f\2\2\26")
+        buf.write("\4\6\b\n\2\b\4\2\34\35--\6\2\21\21\23\24\30\31\36\36\4")
+        buf.write("\2\4\5\37\37\4\2&&((\4\2\34\34  \4\2++\61\61\2\u00e7\2")
+        buf.write("\17\3\2\2\2\4q\3\2\2\2\6\u0097\3\2\2\2\b\u00b6\3\2\2\2")
+        buf.write("\n\u00bb\3\2\2\2\f\16\5\4\3\2\r\f\3\2\2\2\16\21\3\2\2")
+        buf.write("\2\17\r\3\2\2\2\17\20\3\2\2\2\20\3\3\2\2\2\21\17\3\2\2")
+        buf.write("\2\22r\7%\2\2\23\24\7\t\2\2\24r\7%\2\2\25\26\7\f\2\2\26")
         buf.write("r\7%\2\2\27\32\7\"\2\2\30\33\5\6\4\2\31\33\7+\2\2\32\30")
         buf.write("\3\2\2\2\32\31\3\2\2\2\32\33\3\2\2\2\33r\3\2\2\2\34\35")
         buf.write("\5\6\4\2\35\36\7%\2\2\36r\3\2\2\2\37 \7\25\2\2 !\7\32")
@@ -42,22 +42,22 @@ def serializedATN():
         buf.write("\7\22\2\2\679\7\32\2\28:\5\6\4\298\3\2\2\29:\3\2\2\2:")
         buf.write(";\3\2\2\2;=\7%\2\2<>\5\6\4\2=<\3\2\2\2=>\3\2\2\2>?\3\2")
         buf.write("\2\2?A\7%\2\2@B\5\6\4\2A@\3\2\2\2AB\3\2\2\2BC\3\2\2\2")
-        buf.write("CD\7#\2\2Dr\5\4\3\2EF\5\n\6\2FG\7\60\2\2GW\7\32\2\2HX")
-        buf.write("\7+\2\2IK\5\n\6\2JL\7\60\2\2KJ\3\2\2\2KL\3\2\2\2LT\3\2")
-        buf.write("\2\2MN\7\n\2\2NP\5\n\6\2OQ\7\60\2\2PO\3\2\2\2PQ\3\2\2")
+        buf.write("CD\7#\2\2Dr\5\4\3\2EF\5\n\6\2FG\7\61\2\2GW\7\32\2\2HX")
+        buf.write("\7+\2\2IK\5\n\6\2JL\7\61\2\2KJ\3\2\2\2KL\3\2\2\2LT\3\2")
+        buf.write("\2\2MN\7\n\2\2NP\5\n\6\2OQ\7\61\2\2PO\3\2\2\2PQ\3\2\2")
         buf.write("\2QS\3\2\2\2RM\3\2\2\2SV\3\2\2\2TR\3\2\2\2TU\3\2\2\2U")
         buf.write("X\3\2\2\2VT\3\2\2\2WH\3\2\2\2WI\3\2\2\2WX\3\2\2\2XY\3")
         buf.write("\2\2\2Yc\7#\2\2Zd\7%\2\2[_\7\27\2\2\\^\5\4\3\2]\\\3\2")
         buf.write("\2\2^a\3\2\2\2_]\3\2\2\2_`\3\2\2\2`b\3\2\2\2a_\3\2\2\2")
         buf.write("bd\7!\2\2cZ\3\2\2\2c[\3\2\2\2dr\3\2\2\2ef\5\n\6\2fi\7")
-        buf.write("\60\2\2gh\7\n\2\2hj\7\60\2\2ig\3\2\2\2jk\3\2\2\2ki\3\2")
+        buf.write("\61\2\2gh\7\n\2\2hj\7\61\2\2ig\3\2\2\2jk\3\2\2\2ki\3\2")
         buf.write("\2\2kl\3\2\2\2lo\3\2\2\2mn\7\6\2\2np\5\6\4\2om\3\2\2\2")
         buf.write("op\3\2\2\2pr\3\2\2\2q\22\3\2\2\2q\23\3\2\2\2q\25\3\2\2")
         buf.write("\2q\27\3\2\2\2q\34\3\2\2\2q\37\3\2\2\2q(\3\2\2\2q\60\3")
         buf.write("\2\2\2q\66\3\2\2\2qE\3\2\2\2qe\3\2\2\2r\5\3\2\2\2st\b")
-        buf.write("\4\1\2t\u0098\7-\2\2u\u0098\7.\2\2v\u0098\7/\2\2wx\7\60")
-        buf.write("\2\2x\u0081\7\32\2\2y~\5\6\4\2z{\7\n\2\2{}\5\6\4\2|z\3")
-        buf.write("\2\2\2}\u0080\3\2\2\2~|\3\2\2\2~\177\3\2\2\2\177\u0082")
+        buf.write("\4\1\2t\u0098\7.\2\2u\u0098\7/\2\2v\u0098\7\60\2\2wx\7")
+        buf.write("\61\2\2x\u0081\7\32\2\2y~\5\6\4\2z{\7\n\2\2{}\5\6\4\2")
+        buf.write("|z\3\2\2\2}\u0080\3\2\2\2~|\3\2\2\2~\177\3\2\2\2\177\u0082")
         buf.write("\3\2\2\2\u0080~\3\2\2\2\u0081y\3\2\2\2\u0081\u0082\3\2")
         buf.write("\2\2\u0082\u0083\3\2\2\2\u0083\u0098\7#\2\2\u0084\u0098")
         buf.write("\5\b\5\2\u0085\u0086\5\b\5\2\u0086\u0087\7\6\2\2\u0087")
@@ -82,8 +82,8 @@ def serializedATN():
         buf.write("\u009f\3\2\2\2\u00ad\u00a2\3\2\2\2\u00ad\u00a5\3\2\2\2")
         buf.write("\u00ad\u00a8\3\2\2\2\u00ae\u00b1\3\2\2\2\u00af\u00ad\3")
         buf.write("\2\2\2\u00af\u00b0\3\2\2\2\u00b0\7\3\2\2\2\u00b1\u00af")
-        buf.write("\3\2\2\2\u00b2\u00b7\7\60\2\2\u00b3\u00b4\5\n\6\2\u00b4")
-        buf.write("\u00b5\7\60\2\2\u00b5\u00b7\3\2\2\2\u00b6\u00b2\3\2\2")
+        buf.write("\3\2\2\2\u00b2\u00b7\7\61\2\2\u00b3\u00b4\5\n\6\2\u00b4")
+        buf.write("\u00b5\7\61\2\2\u00b5\u00b7\3\2\2\2\u00b6\u00b2\3\2\2")
         buf.write("\2\u00b6\u00b3\3\2\2\2\u00b7\t\3\2\2\2\u00b8\u00b9\7\13")
         buf.write("\2\2\u00b9\u00bc\5\n\6\2\u00ba\u00bc\t\7\2\2\u00bb\u00b8")
         buf.write("\3\2\2\2\u00bb\u00ba\3\2\2\2\u00bc\13\3\2\2\2\32\17\32")
@@ -107,7 +107,7 @@ class CXParser ( Parser ):
                      "'if'", "'#include'", "'{'", "'<'", "'<='", "'('", 
                      "'['", "'-'", "'!'", "'!='", "'||'", "'+'", "'}'", 
                      "'return'", "')'", "']'", "';'", "'/'", "'''", "'*'", 
-                     "'%'", "'typedef'", "'void'", "'while'", "'true'", 
+                     "'%'", "'typedef'", "'void'", "'while'", "'odd'", "'true'", 
                      "'false'" ]
 
     symbolicNames = [ "<INVALID>", "AMPERSAND", "AND", "XOR", "ASSIGN", 
@@ -118,7 +118,7 @@ class CXParser ( Parser ):
                       "LPAREN", "LSQUAREBRACKET", "MINUS", "NOT", "NOTEQUAL", 
                       "OR", "PLUS", "RBRACE", "RETURN", "RPAREN", "RSQUAREBRACKET", 
                       "SEMICOLON", "SLASH", "SQUOTE", "STAR", "MOD", "TYPEDEF", 
-                      "VOID", "WHILE", "TRUE", "FALSE", "NUM", "IDENTIFIER", 
+                      "VOID", "WHILE", "ODD", "TRUE", "FALSE", "NUM", "IDENTIFIER", 
                       "COMMENT", "WHITESPACE", "NEWLINE" ]
 
     RULE_program = 0
@@ -172,13 +172,14 @@ class CXParser ( Parser ):
     TYPEDEF=40
     VOID=41
     WHILE=42
-    TRUE=43
-    FALSE=44
-    NUM=45
-    IDENTIFIER=46
-    COMMENT=47
-    WHITESPACE=48
-    NEWLINE=49
+    ODD=43
+    TRUE=44
+    FALSE=45
+    NUM=46
+    IDENTIFIER=47
+    COMMENT=48
+    WHITESPACE=49
+    NEWLINE=50
 
     def __init__(self, input:TokenStream, output:TextIO = sys.stdout):
         super().__init__(input, output)
@@ -226,7 +227,7 @@ class CXParser ( Parser ):
             self.state = 13
             self._errHandler.sync(self)
             _la = self._input.LA(1)
-            while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+            while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                 self.state = 10
                 self.statement()
                 self.state = 15
@@ -428,7 +429,7 @@ class CXParser ( Parser ):
                 self.state = 42
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                     self.state = 39
                     self.statement()
                     self.state = 44
@@ -462,7 +463,7 @@ class CXParser ( Parser ):
                 self.state = 55
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                     self.state = 54
                     self.expression(0)
 
@@ -472,7 +473,7 @@ class CXParser ( Parser ):
                 self.state = 59
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                     self.state = 58
                     self.expression(0)
 
@@ -482,7 +483,7 @@ class CXParser ( Parser ):
                 self.state = 63
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                     self.state = 62
                     self.expression(0)
 
@@ -556,7 +557,7 @@ class CXParser ( Parser ):
                     self.state = 93
                     self._errHandler.sync(self)
                     _la = self._input.LA(1)
-                    while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                    while (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.BREAK) | (1 << CXParser.CONST) | (1 << CXParser.CONTINUE) | (1 << CXParser.FOR) | (1 << CXParser.IF) | (1 << CXParser.LBRACE) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.RETURN) | (1 << CXParser.SEMICOLON) | (1 << CXParser.VOID) | (1 << CXParser.WHILE) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                         self.state = 90
                         self.statement()
                         self.state = 95
@@ -666,6 +667,9 @@ class CXParser ( Parser ):
         def NOT(self):
             return self.getToken(CXParser.NOT, 0)
 
+        def ODD(self):
+            return self.getToken(CXParser.ODD, 0)
+
         def PLUS(self, i:int=None):
             if i is None:
                 return self.getTokens(CXParser.PLUS)
@@ -763,7 +767,7 @@ class CXParser ( Parser ):
                 self.state = 127
                 self._errHandler.sync(self)
                 _la = self._input.LA(1)
-                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
+                if (((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.CONST) | (1 << CXParser.LPAREN) | (1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.VOID) | (1 << CXParser.ODD) | (1 << CXParser.TRUE) | (1 << CXParser.FALSE) | (1 << CXParser.NUM) | (1 << CXParser.IDENTIFIER))) != 0):
                     self.state = 119
                     self.expression(0)
                     self.state = 124
@@ -801,7 +805,7 @@ class CXParser ( Parser ):
             elif la_ == 7:
                 self.state = 135
                 _la = self._input.LA(1)
-                if not(_la==CXParser.MINUS or _la==CXParser.NOT):
+                if not((((_la) & ~0x3f) == 0 and ((1 << _la) & ((1 << CXParser.MINUS) | (1 << CXParser.NOT) | (1 << CXParser.ODD))) != 0)):
                     self._errHandler.recoverInline(self)
                 else:
                     self._errHandler.reportMatch(self)

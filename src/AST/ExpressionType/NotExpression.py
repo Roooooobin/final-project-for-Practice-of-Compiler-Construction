@@ -18,7 +18,8 @@ class NotExpression(Expression):
         return "!" + str(self.expression)
 
     def compile(self):
-        return self.expression.compile() + "not\n"
+        code = self.expression.compile() + "not\n"
+        return code
 
     def serialize(self, level):
         output = padding(level) + "NotExpression\n"

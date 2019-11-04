@@ -17,6 +17,7 @@ from src.AST.ExpressionType.ComparisonExpression import ComparisonExpression
 from src.AST.ExpressionType.LogicExpression import LogicExpression
 from src.AST.ExpressionType.NegativeExpression import NegativeExpression
 from src.AST.ExpressionType.NotExpression import NotExpression
+from src.AST.ExpressionType.OddExpression import OddExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
 from src.AST.ExpressionType.VariableDefineExpression import VariableDefineExpression
 from src.AST.Program import Program
@@ -115,7 +116,7 @@ class ASTBuilder:
             """
             AST仅有两个孩子：
             1. int identifier
-            2. MINUS|NOT expression
+            2. MINUS|NOT|ODD expression
             """
             token = tree.getChild(0).getPayload()
 
@@ -124,6 +125,8 @@ class ASTBuilder:
                     return self.build_negative_expression(tree)
                 elif token.type == CXLexer.NOT:
                     return self.build_not_expression(tree)
+                elif token.type == CXLexer.ODD:
+                    return self.build_odd_expression(tree)
                 else:
                     raise RuntimeError("Invalid Expression: '{}'".format(tree.getText()))
             else:
@@ -248,6 +251,16 @@ class ASTBuilder:
             raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
 
         return NotExpression(self.build_expression(tree.getChild(1)))
+
+    def build_odd_expression(self, tree):
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
+
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.ODD:
+            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
+
+        return OddExpression(self.build_expression(tree.getChild(1)))
 
     def build_increment_expression(self, tree):
         return IncrementExpression(self.build_variable_expression(tree.getChild(0)))

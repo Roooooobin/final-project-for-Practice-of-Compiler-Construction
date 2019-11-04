@@ -18,10 +18,10 @@ class NegativeExpression(Expression):
         return "-" + str(self.expression)
 
     def compile(self):
-        output = self.expression.compile()
-        output += "neg " + self.basetype.get_pcode() + "\n"
+        code = self.expression.compile()
+        code += "neg " + self.basetype.get_pcode() + "\n"
 
-        return output
+        return code
 
     def serialize(self, level):
         output = padding(level) + "NegateExpression\n"
