@@ -23,6 +23,7 @@ iterationstatement
 : WHILE LEFTPARENTHESIS expression RIGHTPARENTHESIS statement
 | FOR LEFTPARENTHESIS expression? SEMICOLON expression? SEMICOLON expression? RIGHTPARENTHESIS statement
 | DO statement WHILE LEFTPARENTHESIS expression RIGHTPARENTHESIS SEMICOLON
+| REPEAT statement UNTIL LEFTPARENTHESIS expression RIGHTPARENTHESIS SEMICOLON 
 ;
 
 expression
@@ -36,7 +37,6 @@ assignmentexpression
 
 conditionalexpression
 : logicorexpression
-| logicorexpression QUESTIONMARK expression COLON conditionalexpression
 ;
 
 logicorexpression
@@ -159,4 +159,6 @@ MINUSMINUS: '--';
 CONST: 'const';
 BREAK: 'break';
 CONTINUE: 'continue';
+REPEAT: 'repeat';
+UNTIL: 'until';
 IDENTIFIER: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;

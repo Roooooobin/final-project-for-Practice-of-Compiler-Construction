@@ -14,6 +14,7 @@ class LogicExpression(Expression):
         self.left_expression = left_expression
         self.right_expression = right_expression
         self.operation = operation
+        # print(self.left_expression.basetype, self.right_expression.basetype)
         if self.left_expression.basetype != self.right_expression.basetype:
             raise RuntimeError("left and right expression must be of the same type")
         if not isinstance(self.left_expression.basetype, BooleanType):

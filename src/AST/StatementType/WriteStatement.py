@@ -18,7 +18,6 @@ class WriteStatement(Statement):
         return "statement"
 
     def compile(self):
-        print(self.basetype)
         type_out_dic = {"int": "i", "bool": "b"}
         code = self.expression.compile()
         if self.write_type == "write":

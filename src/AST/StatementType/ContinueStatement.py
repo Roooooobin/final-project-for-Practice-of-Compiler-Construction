@@ -5,17 +5,19 @@
 # @Time    : 2019/11/2 8:58
 """
 from src.AST.Statement import Statement
+from utils import padding
 
 
 class ContinueStatement(Statement):
-    def __init__(self):
+    def __init__(self, symbol_table):
         Statement.__init__(self)
+        self.symbol_table = symbol_table
 
     def __str__(self):
         return "Continue\n"
 
     def compile(self):
-        return "ujp " + self.symbol.get_begin_loop() + "\n"
+        return "ujp " + self.symbol_table.get_begin_loop() + "\n"
 
     def serialize(self, level):
         output = padding(level) + "ContinueStatement\n"
