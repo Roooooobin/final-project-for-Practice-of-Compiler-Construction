@@ -1,5 +1,5 @@
 int x;
 x = 2;
-int y = 3;
+int y = -3 + x;
 writeln x+2;
 writeln y;

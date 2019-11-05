@@ -161,6 +161,15 @@ class CXListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by CXParser#unaryexpression.
+    def enterUnaryexpression(self, ctx:CXParser.UnaryexpressionContext):
+        pass
+
+    # Exit a parse tree produced by CXParser#unaryexpression.
+    def exitUnaryexpression(self, ctx:CXParser.UnaryexpressionContext):
+        pass
+
+
     # Enter a parse tree produced by CXParser#primaryexpression.
     def enterPrimaryexpression(self, ctx:CXParser.PrimaryexpressionContext):
         pass

@@ -82,11 +82,14 @@ multiplicativeexpression
 ;
 
 incrementalexpression
-: primaryexpression
+: unaryexpression
 | incrementalexpression PLUSPLUS
 | incrementalexpression MINUSMINUS
-| NOT primaryexpression
-| MINUS primaryexpression
+;
+
+unaryexpression
+: primaryexpression
+| (NOT | MINUS | ODD) unaryexpression
 ;
 
 primaryexpression

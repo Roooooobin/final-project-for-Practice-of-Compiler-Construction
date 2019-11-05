@@ -112,7 +112,7 @@ class ASTBuilder:
         if tree.getChildCount() == 2:
             return self.build_expression(tree.getChild(0))
 
-    # TODO: odd grammar definition, not, -
+    # TODO: odd grammar definition, not, -, ?:
     def build_expression(self, tree):
         return self.build_assignment_expression(tree.getChild(0))
 
@@ -347,7 +347,7 @@ class ASTBuilder:
 
     def build_incremental_expression(self, tree):
         if tree.getChildCount() == 1:
-            return self.build_base_expression(tree.getChild(0))
+            return self.build_unary_expression(tree.getChild(0))
         else:
             token1 = tree.getChild(1).getPayload()
             if token1.type == CXLexer.PLUSPLUS:
@@ -356,6 +356,20 @@ class ASTBuilder:
                 return DecrementExpression(self.build_variable_expression(tree.getChild(0)))
             else:
                 raise RuntimeError("No such: {} incremental operation".format(tree.getText()))
+
+    def build_unary_expression(self, tree):
+        if tree.getChildCount() == 1:
+            return self.build_base_expression(tree.getChild(0))
+        if tree.getChildCount() == 2:
+            token = tree.getChild(0).getPayload()
+            if token.type == CXLexer.NOT:
+                return NotExpression(self.build_unary_expression(tree.getChild(1)))
+            elif token.type == CXLexer.MINUS:
+                return NegativeExpression(self.build_unary_expression(tree.getChild(1)))
+            elif token.type == CXLexer.ODD:
+                return OddExpression(self.build_unary_expression(tree.getChild(1)))
+            else:
+                raise RuntimeError("Not supported {} yet".format(tree.getText()))
 
     def build_base_expression(self, tree):
         if tree.getChildCount() == 1:
