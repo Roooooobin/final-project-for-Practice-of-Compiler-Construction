@@ -19,7 +19,6 @@ class VariableDefineExpression(Expression):
         output = "Define " + str(self.basetype) + ":" + str(self.symbol.identifier) + "\n"
         return output
 
-    # TODO: no return?
     def compile(self):
         code = "lod " + str(self.symbol.basetype.get_pcode()) + " 0 " + str(self.symbol.address) + "\n"
         return code

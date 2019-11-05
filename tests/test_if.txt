@@ -1,0 +1,29 @@
+/*
+this test file includes:
+    if-else, -x, ++, --, local variable in if-else statement, writeln
+*/
+
+int x = 3;
+int y;
+if (-x > 2){
+    x--;
+    y++;
+}
+else{
+    x++;
+    y--;
+    int z = 111;
+    writeln z;
+    int x = 123;
+}
+int z = 22;
+writeln x;
+writeln y;
+writeln z;
+
+/*
+111
+4
+-1
+22
+*/

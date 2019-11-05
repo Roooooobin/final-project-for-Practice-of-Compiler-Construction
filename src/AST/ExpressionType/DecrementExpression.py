@@ -20,7 +20,7 @@ class DecrementExpression(Expression):
     def compile(self):
         output = self.variable.compile()
         output += "dec " + self.basetype.get_pcode() + " 1\n"
-
+        output += self.variable.compile().replace("lod", "str")
         return output
 
     def serialize(self, level):

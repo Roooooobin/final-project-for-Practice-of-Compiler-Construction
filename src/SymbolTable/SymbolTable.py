@@ -38,10 +38,9 @@ class SymbolTable:
         if basetype.get_size() == 0:
             raise TypeError("Type should have a size greater then 0")
 
-        symbol = Symbol(identifier, basetype, self.scope.get_allocated())
+        symbol = Symbol(identifier, basetype, self.scope.get_total_allocated())
 
         self.scope.add_symbol(symbol)
-
         self.scope.allocated += basetype.get_size()
 
         return symbol

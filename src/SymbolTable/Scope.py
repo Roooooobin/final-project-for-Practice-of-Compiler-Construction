@@ -32,9 +32,11 @@ class Scope:
     def get_total_allocated(self):
         """Return how many memory was allocated in this scope and it's children scopes"""
         sum_memery = self.allocated
-
-        for scope in self.scopes:
-            sum_memery += scope.get_total_allocated()
+        scope = self.parent_scope
+        while scope:
+            print(scope.get_allocated())
+            sum_memery += scope.get_allocated()
+            scope = scope.parent_scope
 
         return sum_memery
 

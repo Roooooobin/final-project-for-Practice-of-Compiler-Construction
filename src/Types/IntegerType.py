@@ -25,6 +25,5 @@ class IntegerType(BaseType):
     def serialize(self, level):
         return "IntegerType"
 
-    # TODO: int size=1?
     def get_size(self):
         return 4

@@ -1,5 +1,15 @@
-int x;
-x = 2;
-int y = -3 + x;
-writeln x+2;
-writeln y;
+int x = 3;
+int y = 4;
+if((odd x) && true){
+    x++;
+}
+else{
+    x--;
+}
+writeln x;
+
+
+/*
+4
+6
+*/

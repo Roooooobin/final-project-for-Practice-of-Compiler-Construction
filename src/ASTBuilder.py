@@ -21,9 +21,10 @@ from src.AST.ExpressionType.OddExpression import OddExpression
 from src.AST.ExpressionType.VariableCallExpression import VariableCallExpression
 from src.AST.ExpressionType.VariableDefineExpression import VariableDefineExpression
 from src.AST.Program import Program
-from src.AST.Statement import Statement
 from src.AST.StatementType.BreakStatement import BreakStatement
+from src.AST.StatementType.CompoundStatement import CompoundStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
+from src.AST.StatementType.IfStatement import IfStatement
 from src.AST.StatementType.WriteStatement import WriteStatement
 from src.Types.BooleanType import BooleanType
 from src.Types.IntegerType import IntegerType
@@ -53,7 +54,7 @@ class ASTBuilder:
 
         child_count = tree.getChildCount()
         for i in range(child_count):
-            print(i)
+            # print(i, i)
             self.AST.add_statement(self.build_statement(tree.getChild(i)))
 
         return self.AST
@@ -62,14 +63,14 @@ class ASTBuilder:
         if tree.getChildCount() == 0:
             raise RuntimeError("Invalid Statement: '{}'".format(tree.getText()))
         token = tree.getChild(0).getPayload()
-        if isinstance(token, Token) and token == CXLexer.BREAK:
+        if isinstance(token, Token) and token.type == CXLexer.BREAK:
             token1 = tree.getChild(1).getPayload()
-            if token == CXLexer.BREAK:
+            if token.type == CXLexer.BREAK:
                 if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                     return BreakStatement()
                 else:
                     RuntimeError("Wrong Break statement, error: '{}'".format(tree.getText()))
-        if isinstance(token, Token) and token == CXLexer.CONTINUE:
+        if isinstance(token, Token) and token.type == CXLexer.CONTINUE:
             token1 = tree.getChild(1).getPayload()
             if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                 return ContinueStatement()
@@ -93,16 +94,16 @@ class ASTBuilder:
                 return self.build_define_statement(tree)
         tree = tree.getChild(0)
         token = tree.getChild(0).getPayload()
-        if token == CXLexer.LEFTBRACE:
+        if isinstance(token, Token) and token.type == CXLexer.LEFTBRACE:
             # 遇见左大括号，那么生成复合语句
             return self.build_compound_statement(tree)
-        elif token == CXLexer.WHILE:
+        elif isinstance(token, Token) and token.type == CXLexer.WHILE:
             return self.build_while_statement(tree)
-        elif token == CXLexer.FOR:
+        elif isinstance(token, Token) and token.type == CXLexer.FOR:
             return self.build_for_statement(tree)
-        elif token == CXLexer.IF:
+        elif isinstance(token, Token) and token.type == CXLexer.IF:
             return self.build_if_statement(tree)
-        elif token == CXLexer.DO:
+        elif isinstance(token, Token) and token.type == CXLexer.DO:
             pass
             # return self.build_dowhile_statement(tree)
         else:
@@ -112,7 +113,7 @@ class ASTBuilder:
         if tree.getChildCount() == 2:
             return self.build_expression(tree.getChild(0))
 
-    # TODO: odd grammar definition, not, -, ?:
+    # TODO: ?:, odd return int not bool, do while, while, for, break, continue,
     def build_expression(self, tree):
         return self.build_assignment_expression(tree.getChild(0))
 
@@ -403,7 +404,27 @@ class ASTBuilder:
             raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
     def build_compound_statement(self, tree):
-        pass
+        tree = tree.getChild(0)
+        # print(tree.getChildCount())
+        if tree.getChildCount() < 2:
+            raise RuntimeError("Invalid compund statement: '" + tree.getText() + "'")
+        # expects an RBRACE at the end
+        token = tree.getChild(tree.getChildCount() - 1).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.RIGHTBRACE:
+            raise RuntimeError("Invalid compund statement: '" + tree.getText() + "'")
+        # Open Scope
+        self.symbol.open_scope()
+        # Create list with statements
+        statements = []
+        for i in range(1, tree.getChildCount()-1):
+            statements.append(self.build_statement(tree.getChild(i)))
+
+        # statements = [self.build_statement(tree.getChild(i)) for i in range(1, tree.getChildCount()-1)]
+        # Get the used space in this compound statement
+        usedSpace = self.symbol.get_allocated_space()
+        # Close Scope
+        self.symbol.close_scope()
+        return CompoundStatement(statements)
 
     def build_while_statement(self, tree):
         pass
@@ -412,7 +433,59 @@ class ASTBuilder:
         pass
 
     def build_if_statement(self, tree):
-        pass
+        # 先检查
+        if tree.getChildCount() < 5:
+            raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.IF:
+            raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
+            raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
+        token = tree.getChild(3).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
+            raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
+        if tree.getChildCount() == 5:
+            # Done, no else clause
+            token = tree.getChild(4).getPayload()
+            # Build statement
+            statement = None
+            if token.getText() != ';':
+                self.symbol.open_scope()
+                statement = self.build_compound_statement(tree.getChild(4))
+                self.symbol.close_scope()
+            return IfStatement(self.build_expression(tree.getChild(2)), statement, None, self.symbol)
+
+        # we're going on with the else clause, but then we're expecting 7 children
+        if tree.getChildCount() != 7:
+            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+
+        # Build statement
+        self.symbol.open_scope()
+        # print(self.symbol.scope.get_total_allocated())
+        statement = self.build_compound_statement(tree.getChild(4))
+        self.symbol.close_scope()
+
+        alternativeStatement = None
+        # Check if else clause are statements or if it is another if clause
+        if tree.getChild(6).getChildCount() > 0:
+            token = tree.getChild(6).getChild(0).getPayload()
+            if isinstance(token, Token) and token.type == CXLexer.IF:
+                # another if clause
+                alternativeStatement = self.build_if_statement(tree.getChild(6))
+            else:
+                # Build alternative statement
+                self.symbol.open_scope()
+                alternativeStatement = self.build_compound_statement(tree.getChild(6))
+                self.symbol.close_scope()
+
+        # Check if ELSE at end
+        token = tree.getChild(5).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.ELSE:
+            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+
+        return IfStatement(self.build_expression(tree.getChild(2)), statement, alternativeStatement, self.symbol)
+
 
     def build_write_statement(self, tree):
         write_expr = self.build_expression(tree.getChild(1))
