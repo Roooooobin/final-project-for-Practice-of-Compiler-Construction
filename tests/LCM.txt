@@ -1,5 +1,7 @@
-int x, y;
-scanf("%d%d", &x, &y);
+int x;
+int y;
+read x;
+read y;
 int product = x * y;
 if(x > y){
 	x = x + y;

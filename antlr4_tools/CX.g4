@@ -8,6 +8,7 @@ statement
 | iterationstatement
 | BREAK SEMICOLON
 | CONTINUE SEMICOLON
+| READ IDENTIFIER SEMICOLON
 | WRITE expression SEMICOLON
 | WRITELN expression SEMICOLON
 | basetype IDENTIFIER (ASSIGN expression)? SEMICOLON
@@ -83,7 +84,7 @@ multiplicativeexpression
 
 castexpression
 : postfixexpression
-| LEFTPARENTHESIS (INT | REAL) RIGHTPARENTHESIS expression
+| LEFTPARENTHESIS (INT | REAL) RIGHTPARENTHESIS primaryexpression
 ;
 
 postfixexpression
@@ -118,6 +119,7 @@ COMMENT
 WHITESPACE: (' '|'\t')+ -> skip;
 NEWLINE: '\r'? '\n' -> skip;
 
+READ: 'read';
 WRITE: 'write';
 WRITELN: 'writeln';
 INT: 'int';

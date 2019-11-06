@@ -1,16 +1,16 @@
-int x = 3;
-int y = (int)(4.3 * 1.1);
-writeln x;
-writeln y;
-if (x > 2){
-    x++;
+int x;
+int y;
+read x;
+read y;
+int product = x * y;
+if(x > y){
+	x = x + y;
+	y = x - y;
+	x = x - y;
 }
-else{
-    x--;
+while(x != 0){
+	int tmp = x;
+	x = y % x;
+	y = tmp;
 }
-write 4.0 * 5.0;
-
-/*
-4
-6
-*/
+writeln (product / y);

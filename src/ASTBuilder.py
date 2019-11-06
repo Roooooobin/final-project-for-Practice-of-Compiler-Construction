@@ -8,6 +8,7 @@ from antlr4 import *
 
 from antlr4_tools.CXLexer import CXLexer
 from antlr4_tools.CXParser import CXParser
+from src.AST.Expression import Expression
 from src.AST.ExpressionType.ArithmeticExpression import ArithmeticExpression
 from src.AST.ExpressionType.AssignExpression import AssignExpression
 from src.AST.ExpressionType.CastExpression import CastExpression
@@ -25,7 +26,10 @@ from src.AST.Program import Program
 from src.AST.StatementType.BreakStatement import BreakStatement
 from src.AST.StatementType.CompoundStatement import CompoundStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
+from src.AST.StatementType.ForStatement import ForStatement
 from src.AST.StatementType.IfStatement import IfStatement
+from src.AST.StatementType.ReadStatement import ReadStatement
+from src.AST.StatementType.WhileStatement import WhileStatement
 from src.AST.StatementType.WriteStatement import WriteStatement
 from src.Types.BooleanType import BooleanType
 from src.Types.IntegerType import IntegerType
@@ -72,6 +76,16 @@ class ASTBuilder:
                 return ContinueStatement(self.symbol_table)
             else:
                 RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
+        if isinstance(token, Token) and token.type == CXLexer.READ:
+            token1 = tree.getChild(1).getPayload()
+            if isinstance(token1, Token) and token1.type == CXLexer.IDENTIFIER:
+                token2 = tree.getChild(2).getPayload()
+                if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
+                    return self.build_read_statement(tree)
+                else:
+                    RuntimeError("Wrong Read statement, error: '{}'".format(tree.getText()))
+            else:
+                RuntimeError("Wrong Read statement, error: '{}'".format(tree.getText()))
         if isinstance(token, Token) and token.type == CXLexer.WRITE:
             token2 = tree.getChild(2).getPayload()
             if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
@@ -110,7 +124,7 @@ class ASTBuilder:
         if tree.getChildCount() == 2:
             return self.build_expression(tree.getChild(0))
 
-    # TODO: real, do while, while, for, break, continue, repeat until
+    # TODO: do while, while, for, break, continue, repeat until, read
     def build_expression(self, tree):
         return self.build_assignment_expression(tree.getChild(0))
 
@@ -350,10 +364,8 @@ class ASTBuilder:
             return self.build_postfix_expression(tree.getChild(0))
         else:
             token1 = tree.getChild(1).getPayload()
-            if token1.type == CXLexer.INT:
-                return CastExpression("int", self.build_expression(tree.getChild(3)))
-            elif token1.type == CXLexer.REAL:
-                return CastExpression("real", self.build_expression(tree.getChild(3)))
+            if token1.type == CXLexer.INT or token1.type == CXLexer.REAL:
+                return CastExpression(tree.getChild(1).getText(), self.build_base_expression(tree.getChild(3)))
             else:
                 raise RuntimeError("Only support cast for int and real yet, now: {}".format(tree.getChild(1).getText()))
 
@@ -440,10 +452,78 @@ class ASTBuilder:
         return CompoundStatement(statements)
 
     def build_while_statement(self, tree):
-        pass
+        """Build While Statement"""
+        if tree.getChildCount() != 5:
+            raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
+
+        # Check if WHILE at front
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.WHILE:
+            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+
+        # Check if LPAREN at front
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
+            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+
+        # Check if RPAREN at end
+        token = tree.getChild(3).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
+            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+
+        # build the statement
+        self.symbol_table.open_scope()
+        statement = self.build_compound_statement(tree.getChild(4))
+        self.symbol_table.close_scope()
+
+        return WhileStatement(self.build_expression(tree.getChild(2)), statement, self.symbol_table)
 
     def build_for_statement(self, tree):
-        pass
+        if tree.getChildCount() < 6:
+            raise RuntimeError("invalid FOR statement: '" + tree.getText() + "'")
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.FOR:
+            raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
+        # Check if LPAREN at front
+        token = tree.getChild(1).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
+            raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
+        # Check for RPAREN
+        token = tree.getChild(tree.getChildCount() - 2).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
+            raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
+
+        child_index = 2
+        semicolon_index = 0
+        init_expression = Expression(None)
+        check_expression = Expression(None)
+        update_expression = Expression(None)
+        while True:
+            token = tree.getChild(child_index).getPayload()
+            if isinstance(token, Token):
+                if token.type == CXLexer.RIGHTPARENTHESIS:
+                    break
+                # index=2为分号表示初始语句为空
+                elif token.type == CXLexer.SEMICOLON:
+                    semicolon_index += 1
+                    child_index += 1
+                    if semicolon_index > 2:
+                        raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
+                else:
+                    raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
+            else:
+                if semicolon_index == 0:
+                    init_expression = self.build_expression(tree.getChild(child_index))
+                elif semicolon_index == 1:
+                    check_expression = self.build_expression(tree.getChild(child_index))
+                else:
+                    update_expression = self.build_expression(tree.getChild(child_index))
+                child_index += 1
+        # build statement
+        self.symbol_table.open_scope()
+        statement = self.build_compound_statement(tree.getChild(tree.getChildCount() - 1))
+        self.symbol_table.close_scope()
+        return ForStatement(init_expression, check_expression, update_expression, statement, self.symbol_table)
 
     def build_ifelse_statement(self, tree):
         # 先检查
@@ -505,6 +585,11 @@ class ASTBuilder:
     def build_repeatuntil_statement(self, tree):
         pass
 
+    def build_read_statement(self, tree):
+        identifier = tree.getChild(1).getText()
+        symbol = self.symbol_table.get_symbol(identifier)
+        return ReadStatement(VariableCallExpression(symbol))
+
     def build_write_statement(self, tree):
         write_expr = self.build_expression(tree.getChild(1))
         return WriteStatement(write_expr, "write")
@@ -514,9 +599,6 @@ class ASTBuilder:
         return WriteStatement(write_expr, "writeln")
 
     def build_type(self, tree):
-        token = None
-        basetype = None
-
         if tree.getChildCount() == 1:
             token = tree.getChild(0).getPayload()
 

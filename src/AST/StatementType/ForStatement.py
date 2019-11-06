@@ -25,42 +25,31 @@ class ForStatement(Statement):
         return out
 
     def compile(self):
-        self.symbol_table.openLoop()
-
+        self.symbol_table.open_loop()
         # Get begin and end label
-        begin = self.symbol_table.getBeginLoop()
-        end = self.symbol_table.getEndLoop()
-
+        begin_label = self.symbol_table.get_begin_loop()
+        end_label = self.symbol_table.get_end_loop()
         code = ""
-
         # compile the initial expression
-        if self.init_expr is not None:
+        if self.init_expr:
             code += self.init_expr.compile()
-
         # Mark begin of loop
-        code += str(begin) + ":\n"
-
+        code += str(begin_label) + ":\n"
         # Check if check is an boolean Expression
         if not isinstance(self.condition_expr.basetype, BooleanType):
             raise RuntimeError("Check condition in for loop should be of boolean type")
-
         # Compile check
         code += self.condition_expr.compile()
-        code += "fjp " + str(end) + "\n"
-
+        code += "fjp " + str(end_label) + "\n"
         # Compile the statement
         code += self.statement.compile()
-
         # compile the update
         code += self.update_expr.compile()
-
         # Jump to begin with unconditional Jump
-        code += "ujp " + str(begin) + "\n"
-
+        code += "ujp " + str(begin_label) + "\n"
         # Mark end of for loop
-        code += str(end) + ":\n"
-
-        self.symbol_table.closeLoop()
+        code += str(end_label) + ":\n"
+        self.symbol_table.close_loop()
 
         return code
 

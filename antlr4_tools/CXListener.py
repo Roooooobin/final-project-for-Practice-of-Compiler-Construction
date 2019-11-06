@@ -152,12 +152,21 @@ class CXListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by CXParser#incrementalexpression.
-    def enterIncrementalexpression(self, ctx:CXParser.IncrementalexpressionContext):
+    # Enter a parse tree produced by CXParser#castexpression.
+    def enterCastexpression(self, ctx:CXParser.CastexpressionContext):
         pass
 
-    # Exit a parse tree produced by CXParser#incrementalexpression.
-    def exitIncrementalexpression(self, ctx:CXParser.IncrementalexpressionContext):
+    # Exit a parse tree produced by CXParser#castexpression.
+    def exitCastexpression(self, ctx:CXParser.CastexpressionContext):
+        pass
+
+
+    # Enter a parse tree produced by CXParser#postfixexpression.
+    def enterPostfixexpression(self, ctx:CXParser.PostfixexpressionContext):
+        pass
+
+    # Exit a parse tree produced by CXParser#postfixexpression.
+    def exitPostfixexpression(self, ctx:CXParser.PostfixexpressionContext):
         pass
 
 

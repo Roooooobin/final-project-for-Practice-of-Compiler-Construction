@@ -4,6 +4,7 @@
 # @Author  : Robin
 # @Time    : 2019/10/30 19:01
 """
+from src.SymbolTable.Loop import Loop
 from src.SymbolTable.Scope import Scope
 from src.SymbolTable.Symbol import Symbol
 

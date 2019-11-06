@@ -15,10 +15,8 @@ class CastExpression(Expression):
         self.expression = expression
         if basetype == "int":
             self.basetype = IntegerType()
-            self.type = "i"
         elif basetype == "real":
             self.basetype = RealType()
-            self.type = "r"
         else:
             pass
 
@@ -26,7 +24,8 @@ class CastExpression(Expression):
         return str(self.basetype) + " " + str(self.expression)
 
     def compile(self):
-        code = self.expression.compile() + "conv {} {}\n".format(self.expression.basetype.get_pcode(), self.type)
+        code = self.expression.compile() + "conv {} {}\n".format(self.expression.basetype.get_pcode(),
+                                                                 self.basetype.get_pcode())
         return code
 
     def serialize(self, level):
