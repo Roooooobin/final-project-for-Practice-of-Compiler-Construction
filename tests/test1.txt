@@ -1,13 +1,14 @@
 int x = 3;
-int y = 4;
-if(odd x){
+int y = (int)(4.3 * 1.1);
+writeln x;
+writeln y;
+if (x > 2){
     x++;
 }
 else{
     x--;
 }
-writeln x;
-
+write 4.0 * 5.0;
 
 /*
 4

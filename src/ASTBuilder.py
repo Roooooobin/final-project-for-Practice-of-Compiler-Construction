@@ -10,6 +10,7 @@ from antlr4_tools.CXLexer import CXLexer
 from antlr4_tools.CXParser import CXParser
 from src.AST.ExpressionType.ArithmeticExpression import ArithmeticExpression
 from src.AST.ExpressionType.AssignExpression import AssignExpression
+from src.AST.ExpressionType.CastExpression import CastExpression
 from src.AST.ExpressionType.ConstantExpression import ConstantExpression
 from src.AST.ExpressionType.DecrementExpression import DecrementExpression
 from src.AST.ExpressionType.IncrementExpression import IncrementExpression
@@ -28,6 +29,7 @@ from src.AST.StatementType.IfStatement import IfStatement
 from src.AST.StatementType.WriteStatement import WriteStatement
 from src.Types.BooleanType import BooleanType
 from src.Types.IntegerType import IntegerType
+from src.Types.RealType import RealType
 
 
 class ASTBuilder:
@@ -108,7 +110,7 @@ class ASTBuilder:
         if tree.getChildCount() == 2:
             return self.build_expression(tree.getChild(0))
 
-    # TODO: odd return int not bool, do while, while, for, break, continue, repeat until
+    # TODO: real, do while, while, for, break, continue, repeat until
     def build_expression(self, tree):
         return self.build_assignment_expression(tree.getChild(0))
 
@@ -155,6 +157,8 @@ class ASTBuilder:
             basetype = BooleanType()
         elif basetype == "int":
             basetype = IntegerType()
+        elif basetype == "real":
+            basetype = RealType()
         identifier = tree.getChild(1).getText()
         # Register in Symbol Table
         symbol = self.symbol_table.register_symbol(identifier, basetype)
@@ -316,7 +320,7 @@ class ASTBuilder:
 
     def build_multiplicative_expression(self, tree):
         if tree.getChildCount() == 1:
-            return self.build_incremental_expression(tree.getChild(0))
+            return self.build_cast_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
             raise RuntimeError("Invalid ArithmeticExpression: '{}'".format(tree.getText()))
 
@@ -326,7 +330,7 @@ class ASTBuilder:
 
         # 双目运算，先递归得到左右两个expression
         left_expression = self.build_multiplicative_expression(tree.getChild(0))
-        right_expression = self.build_incremental_expression(tree.getChild(2))
+        right_expression = self.build_cast_expression(tree.getChild(2))
 
         if token.type == CXLexer.STAR:
             return ArithmeticExpression(left_expression, right_expression, "*")
@@ -341,7 +345,19 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid ArithmeticExpression: '" + tree.getText() + "'")
 
-    def build_incremental_expression(self, tree):
+    def build_cast_expression(self, tree):
+        if tree.getChildCount() == 1:
+            return self.build_postfix_expression(tree.getChild(0))
+        else:
+            token1 = tree.getChild(1).getPayload()
+            if token1.type == CXLexer.INT:
+                return CastExpression("int", self.build_expression(tree.getChild(3)))
+            elif token1.type == CXLexer.REAL:
+                return CastExpression("real", self.build_expression(tree.getChild(3)))
+            else:
+                raise RuntimeError("Only support cast for int and real yet, now: {}".format(tree.getChild(1).getText()))
+
+    def build_postfix_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_unary_expression(tree.getChild(0))
         else:
@@ -395,6 +411,8 @@ class ASTBuilder:
             return ConstantExpression(False, "bool")
         elif token.type == CXLexer.NUMBER:
             return ConstantExpression(int(tree.getChild(0).getText()), "int")
+        elif token.type == CXLexer.REALNUMBER:
+            return ConstantExpression(tree.getChild(0).getText(), "real")
         else:
             raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
@@ -511,6 +529,8 @@ class ASTBuilder:
                     return BooleanType()
                 elif tree.getChild(0).getText() == "int":
                     return IntegerType()
+                elif tree.getChild(0).getText() == "real":
+                    return RealType()
                 else:
                     pass
             else:

@@ -21,6 +21,8 @@ class AssignExpression(Expression):
         return str(self.variable) + " = " + str(self.expression) + "\n"
 
     def compile(self):
+        print(type(self.variable.basetype))
+        print(type(self.expression.basetype))
         if self.variable.basetype != self.expression.basetype:
             raise RuntimeError("Different type between variable({}) and assigned expression({})"
                                .format(self.variable.basetype, self.expression.basetype))

@@ -1,28 +1,28 @@
 """
 # -*- coding: utf-8 -*-
-# @FileName: IntegerType.py
+# @FileName: RealType.py
 # @Author  : Robin
-# @Time    : 2019/10/31 17:54
+# @Time    : 2019/11/6 12:16
 """
 from src.Types.BaseType import BaseType
 
 
-class IntegerType(BaseType):
+class RealType(BaseType):
     def __init__(self):
-        BaseType.__init__(self, 'i')    # int的p-code是'i'
+        BaseType.__init__(self, 'r')
 
     def __str__(self):
         output = ""
         if self.is_const():
             output += "const "
-        output += "int"
+        output += "real"
         return output
 
     def get_pcode(self):
-        return "i"
+        return "r"
 
     def serialize(self, level):
-        return "IntegerType"
+        return "RealType"
 
     def get_size(self):
         return 4

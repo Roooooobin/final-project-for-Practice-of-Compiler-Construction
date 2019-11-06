@@ -6,6 +6,7 @@
 """
 from src.AST.Expression import Expression
 from src.Types.IntegerType import IntegerType
+from src.Types.RealType import RealType
 
 
 class ArithmeticExpression(Expression):
@@ -19,13 +20,13 @@ class ArithmeticExpression(Expression):
         if self.left_expression.basetype != self.right_expression.basetype:
             raise RuntimeError("The two types of the expressions in the arithmetic expression should be the same")
 
-        if not isinstance(self.left_expression.basetype, IntegerType):
-            raise RuntimeError("Left side of arithmetic expression should be an integer but now it is a: "
-                               + str(type(self.left_expression.basetype)))
-
-        if not isinstance(self.right_expression.basetype, IntegerType):
-            raise RuntimeError("Right side of arithmetic expression should be an integer but now it is a: "
-                               + str(type(self.right_expression.basetype)))
+        # if not isinstance(self.left_expression.basetype, IntegerType):
+        #     raise RuntimeError("Left side of arithmetic expression should be an integer but now it is a: "
+        #                        + str(type(self.left_expression.basetype)))
+        #
+        # if not isinstance(self.right_expression.basetype, IntegerType):
+        #     raise RuntimeError("Right side of arithmetic expression should be an integer but now it is a: "
+        #                        + str(type(self.right_expression.basetype)))
         # set the type of this expression
         self.basetype = self.left_expression.basetype
 

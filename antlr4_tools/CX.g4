@@ -75,16 +75,21 @@ additiveexpression
 ;
 
 multiplicativeexpression
-: incrementalexpression
-| multiplicativeexpression STAR incrementalexpression
-| multiplicativeexpression SLASH incrementalexpression
-| multiplicativeexpression MOD incrementalexpression
+: castexpression
+| multiplicativeexpression STAR castexpression
+| multiplicativeexpression SLASH castexpression
+| multiplicativeexpression MOD castexpression
 ;
 
-incrementalexpression
+castexpression
+: postfixexpression
+| LEFTPARENTHESIS (INT | REAL) RIGHTPARENTHESIS expression
+;
+
+postfixexpression
 : unaryexpression
-| incrementalexpression PLUSPLUS
-| incrementalexpression MINUSMINUS
+| postfixexpression PLUSPLUS
+| postfixexpression MINUSMINUS
 ;
 
 unaryexpression
@@ -98,11 +103,12 @@ primaryexpression
 | LEFTPARENTHESIS expression RIGHTPARENTHESIS
 ;
 
-constant: TRUE | FALSE | NUMBER;
+constant: TRUE | FALSE | NUMBER | REALNUMBER;
 
 basetype
-: INT | BOOLEAN
+: INT | BOOLEAN | REAL
 ;
+
 
 COMMENT
 : (BEGININLINECOMMENT .*? NEWLINE
@@ -151,6 +157,7 @@ LEFTSHIFT: '<<';
 RIGHTSHIFT: '>>';
 QUESTIONMARK: '?';
 NUMBER: '0' | [1-9][0-9]*;
+REALNUMBER: [1-9][0-9]*'.'[0-9]+;
 COLON: ':';
 MOD: '%';
 ODD: 'odd';
@@ -161,4 +168,5 @@ BREAK: 'break';
 CONTINUE: 'continue';
 REPEAT: 'repeat';
 UNTIL: 'until';
+REAL: 'real';
 IDENTIFIER: ('a'..'z'|'A'..'Z'|'_') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')*;
