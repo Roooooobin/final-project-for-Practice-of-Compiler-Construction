@@ -23,11 +23,9 @@ class CompoundStatement(Statement):
     def compile(self):
         if not self.statements:
             return ""
-
         code = ""
         for statement in self.statements:
             code += statement.compile()
-
         return code
 
     def serialize(self, level):

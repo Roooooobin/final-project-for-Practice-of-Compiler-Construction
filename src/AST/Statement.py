@@ -7,9 +7,8 @@
 from src.AST.Node import Node
 
 
+# 语句
 class Statement(Node):
-    """Node For Statement in AST"""
-
     def __init__(self):
         Node.__init__(self)
 

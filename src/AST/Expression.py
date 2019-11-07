@@ -7,9 +7,8 @@
 from src.AST.Statement import Statement
 
 
+# 表达式
 class Expression(Statement):
-    """Node For Expression in AST"""
-
     def __init__(self, basetype):
         Statement.__init__(self)
         self.basetype = basetype

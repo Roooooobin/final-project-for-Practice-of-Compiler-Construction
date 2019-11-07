@@ -9,8 +9,6 @@ from utils import padding
 
 
 class BreakStatement(Statement):
-    """Node For BreakStatement in AST"""
-
     def __init__(self, symbol_table):
         Statement.__init__(self)
         self.symbol_table = symbol_table
@@ -18,6 +16,7 @@ class BreakStatement(Statement):
     def __str__(self):
         return "Break\n"
 
+    # break直接跳出循环
     def compile(self):
         return "ujp " + self.symbol_table.get_end_loop() + "\n"
 

@@ -16,6 +16,7 @@ class ContinueStatement(Statement):
     def __str__(self):
         return "Continue\n"
 
+    # continue跳到循环最前面
     def compile(self):
         return "ujp " + self.symbol_table.get_begin_loop() + "\n"
 

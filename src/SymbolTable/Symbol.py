@@ -6,8 +6,8 @@
 """
 
 
+# 一个symbol，变量名，类型，地址
 class Symbol:
-    """Representation of a Symbol"""
     def __init__(self, identifier, basetype, address):
         self.identifier = identifier
         self.basetype = basetype

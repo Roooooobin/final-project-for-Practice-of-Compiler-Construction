@@ -22,19 +22,16 @@ class WhileStatement(Statement):
         return out
 
     def compile(self):
-        # Check if expression is an boolean type
+        # 符号表中开一个loop
         self.symbol_table.open_loop()
         begin_label = self.symbol_table.get_begin_loop()
         end_label = self.symbol_table.get_end_loop()
-        # mark the begin of the WHILE statement
         code = str(begin_label) + ":\n"
-        # compile the expression to evaluate
+        # while中的条件不成立则调至结束label
         code += self.expression.compile() + "fjp " + str(end_label) + "\n"
-        # compile the statement to execute
+        # 执行statement
         code += self.statement.compile()
-        # end with an unconditional jump to the begin
         code += "ujp " + str(begin_label) + "\n"
-        # mark the end of the WHILE statement
         code += str(end_label) + ":\n"
         self.symbol_table.close_loop()
         return code

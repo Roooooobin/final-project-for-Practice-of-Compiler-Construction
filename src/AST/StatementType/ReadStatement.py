@@ -14,7 +14,7 @@ class ReadStatement(Statement):
         self.basetype = expression.basetype
 
     def __str__(self):
-        return "statement"
+        return "read"
 
     def compile(self):
         load_code = self.identifier.compile()
@@ -23,4 +23,4 @@ class ReadStatement(Statement):
         return code
 
     def serialize(self, level):
-        return "statement"
+        return "read"

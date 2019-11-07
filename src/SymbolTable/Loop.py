@@ -6,6 +6,7 @@
 """
 
 
+# 循环体
 class Loop:
     def __init__(self, begin, end):
         self.begin = begin

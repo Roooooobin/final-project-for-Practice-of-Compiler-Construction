@@ -22,6 +22,7 @@ class WriteStatement(Statement):
         code = self.expression.compile()
         if self.write_type == "write":
             return "{}out {}\n".format(code, type_out_dic.get(str(self.basetype)))
+        # writeln在写完之后空行
         else:
             return "{}out {}\nldc c '\\n'\nout c\n".format(code, type_out_dic.get(str(self.basetype)))
 

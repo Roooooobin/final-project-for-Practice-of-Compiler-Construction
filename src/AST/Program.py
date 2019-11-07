@@ -19,21 +19,21 @@ class Program(Node):
         output += "\n"  # 结尾还需要加一个换行
         return output
 
+    # statements
+    def add_statement(self, stmt):
+        self.statements.append(stmt)
+
     def compile(self):
         # 翻译为p-code
         if not self.statements:
             return "hlt\n"
-
+        # 初始设定数据区大小(static part)
         codes = "ssp 15\n"
-        # print(self.statements)
         for stmt in self.statements:
             codes += stmt.compile()
         # 程序最后，终止
         codes += "hlt"
         return codes
-
-    def add_statement(self, stmt):
-        self.statements.append(stmt)
 
     def serialize(self, level):
         output = "Program\n:"

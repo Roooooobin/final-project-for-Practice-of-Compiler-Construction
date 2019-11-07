@@ -27,23 +27,17 @@ class IfStatement(Statement):
         self.symbol_table.open_scope()
         end_if_label = self.symbol_table.create_label()
         end_else_label = self.symbol_table.create_label()
-        # Compile expression and jump if needed
         code = self.expression.compile()
         code += "fjp " + str(end_if_label) + "\n"
-        # compile the statement to execute if existing
         if self.statement:
             code += self.statement.compile()
-        # need to jump to the end of ELSE if there's an alternative
+        # 如果有else
         if self.alternativeStatement:
             code += "ujp " + str(end_else_label) + "\n"
-        # Mark end if code
         code += str(end_if_label) + ":\n"
-        # end scope if
         self.symbol_table.close_scope()
-        # Stop if no alternative statement
         if not self.alternativeStatement:
             return code
-        # Compile alternative statement
         self.symbol_table.open_scope()
         code += self.alternativeStatement.compile()
         code += str(end_else_label) + ":\n"
