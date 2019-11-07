@@ -1,0 +1,12 @@
+int x = 1;
+do{
+    x++;
+}
+while(x < 1);
+writeln x;
+
+int y = 1;
+while(y < 1){
+    y++;
+}
+writeln y;

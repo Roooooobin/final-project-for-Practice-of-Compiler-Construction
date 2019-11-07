@@ -27,14 +27,14 @@ class SymbolTable:
     def close_scope(self):
         """Close Scope"""
         if not self.scope.parent_scope:
-            raise ScopeError("No scope opened previously")
+            raise RuntimeError("No scope opened previously")
 
         self.scope = self.scope.parent_scope
 
     def register_symbol(self, identifier, basetype):
         """Register a Symbol in the current scope with an identifier(string) and basetype(Type) is an array(bool)"""
         if self.scope.symbol_is_in_scope(identifier):
-            raise SymbolAlreadyRegisteredError("Symbol '" + identifier + "' already registered in scope")
+            raise RuntimeError("Symbol '" + identifier + "' already registered in scope")
 
         if basetype.get_size() == 0:
             raise TypeError("Type should have a size greater then 0")
@@ -61,7 +61,7 @@ class SymbolTable:
                     # Stop in main scope
                     break
 
-        raise SymbolNotRegisteredError("Symbol '" + identifier + "' not registered")
+        raise KeyError("Symbol '" + identifier + "' not registered")
 
     def open_loop(self):
         """Open a loop"""
@@ -73,7 +73,7 @@ class SymbolTable:
     def close_loop(self):
         """Close a loop"""
         if len(self.loops) == 0:
-            raise ScopeError("No loops opened")
+            raise RuntimeError("No loops opened")
 
         self.loops.pop()
 

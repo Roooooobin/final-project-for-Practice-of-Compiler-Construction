@@ -1,16 +1,6 @@
-int x;
-int y;
-read x;
-read y;
-int product = x * y;
-if(x > y){
-	x = x + y;
-	y = x - y;
-	x = x - y;
+int x = 1;
+repeat{
+    x++;
 }
-while(x != 0){
-	int tmp = x;
-	x = y % x;
-	y = tmp;
-}
-writeln (product / y);
+until(x < 5);
+writeln x;

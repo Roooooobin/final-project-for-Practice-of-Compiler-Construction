@@ -26,9 +26,11 @@ from src.AST.Program import Program
 from src.AST.StatementType.BreakStatement import BreakStatement
 from src.AST.StatementType.CompoundStatement import CompoundStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
+from src.AST.StatementType.DoWhileStatement import DoWhileStatement
 from src.AST.StatementType.ForStatement import ForStatement
 from src.AST.StatementType.IfStatement import IfStatement
 from src.AST.StatementType.ReadStatement import ReadStatement
+from src.AST.StatementType.RepeatUntilStatement import RepeatUntilStatement
 from src.AST.StatementType.WhileStatement import WhileStatement
 from src.AST.StatementType.WriteStatement import WriteStatement
 from src.Types.BooleanType import BooleanType
@@ -432,11 +434,11 @@ class ASTBuilder:
         tree = tree.getChild(0)
         # print(tree.getChildCount())
         if tree.getChildCount() < 2:
-            raise RuntimeError("Invalid compund statement: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid compound statement: '" + tree.getText() + "'")
         # expects an RBRACE at the end
         token = tree.getChild(tree.getChildCount() - 1).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTBRACE:
-            raise RuntimeError("Invalid compund statement: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid compound statement: '" + tree.getText() + "'")
         # Open Scope
         self.symbol_table.open_scope()
         # Create list with statements
@@ -459,17 +461,17 @@ class ASTBuilder:
         # Check if WHILE at front
         token = tree.getChild(0).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.WHILE:
-            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
 
         # Check if LPAREN at front
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
-            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
 
         # Check if RPAREN at end
         token = tree.getChild(3).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
-            raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
 
         # build the statement
         self.symbol_table.open_scope()
@@ -580,10 +582,48 @@ class ASTBuilder:
         return IfStatement(self.build_expression(tree.getChild(2)), statement, alternativeStatement, self.symbol_table)
 
     def build_dowhile_statement(self, tree):
-        pass
+        if tree.getChildCount() != 7:
+            raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
+        # Check if DO at front
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.DO:
+            raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
+        token = tree.getChild(2).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.WHILE:
+            raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
+        # Check if LPAREN
+        token = tree.getChild(3).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
+            raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
+
+        # build the statement
+        self.symbol_table.open_scope()
+        statement = self.build_compound_statement(tree.getChild(1))
+        self.symbol_table.close_scope()
+
+        return DoWhileStatement(self.build_expression(tree.getChild(4)), statement, self.symbol_table)
 
     def build_repeatuntil_statement(self, tree):
-        pass
+        if tree.getChildCount() != 7:
+            raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
+        # Check if DO at front
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.REPEAT:
+            raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
+        token = tree.getChild(2).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.UNTIL:
+            raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
+        # Check if LPAREN
+        token = tree.getChild(3).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
+            raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
+
+        # build the statement
+        self.symbol_table.open_scope()
+        statement = self.build_compound_statement(tree.getChild(1))
+        self.symbol_table.close_scope()
+
+        return RepeatUntilStatement(self.build_expression(tree.getChild(4)), statement, self.symbol_table)
 
     def build_read_statement(self, tree):
         identifier = tree.getChild(1).getText()
