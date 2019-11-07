@@ -18,13 +18,12 @@ class IncrementExpression(Expression):
         return str(self.variable) + "++"
 
     def compile(self):
-        output = self.variable.compile()
-        output += "inc " + self.basetype.get_pcode() + " 1\n"
-        output += self.variable.compile().replace("lod", "str")
-        return output
+        code = self.variable.compile()
+        code += "inc " + self.basetype.get_pcode() + " 1\n"
+        code += self.variable.compile().replace("lod", "str")
+        return code
 
     def serialize(self, level):
         output = padding(level) + "IncrementExpression\n"
         output += self.variable.serialize(level + 1)
-
         return output

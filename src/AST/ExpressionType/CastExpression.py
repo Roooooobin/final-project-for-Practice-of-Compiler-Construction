@@ -23,6 +23,7 @@ class CastExpression(Expression):
     def __str__(self):
         return str(self.basetype) + " " + str(self.expression)
 
+    # 强制转换conv T1 T2 (T1->T2)
     def compile(self):
         code = self.expression.compile() + "conv {} {}\n".format(self.expression.basetype.get_pcode(),
                                                                  self.basetype.get_pcode())

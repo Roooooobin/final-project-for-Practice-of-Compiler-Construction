@@ -28,6 +28,7 @@ class LogicExpression(Expression):
     def __str__(self):
         return str(self.left_expression) + " " + str(self.right_expression) + " " + self.operation
 
+    # 逻辑与，或
     def compile(self):
         operations = {"&&": "and", "||": "or"}
         left_compiled = self.left_expression.compile()

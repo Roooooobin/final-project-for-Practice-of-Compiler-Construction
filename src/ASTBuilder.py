@@ -27,6 +27,7 @@ from src.AST.StatementType.BreakStatement import BreakStatement
 from src.AST.StatementType.CompoundStatement import CompoundStatement
 from src.AST.StatementType.ContinueStatement import ContinueStatement
 from src.AST.StatementType.DoWhileStatement import DoWhileStatement
+from src.AST.StatementType.EmptyStatement import EmptyStatement
 from src.AST.StatementType.ForStatement import ForStatement
 from src.AST.StatementType.IfStatement import IfStatement
 from src.AST.StatementType.ReadStatement import ReadStatement
@@ -47,37 +48,41 @@ class ASTBuilder:
     def build(self):
         # 输入测试文件路径
         input_file = FileStream(self.file_path)
-        lexer = CXLexer(input_file)
+        lexer = CXLexer(input_file)  # Lexer做词法分析，将符号分组成符号类
         stream = CommonTokenStream(lexer)
-        parser = CXParser(stream)
-        # 经过antlr4词法语法分析之后得到抽象语法树
+        parser = CXParser(stream)   # Parser做句法分析
+        # 经过antlr4词法语法分析之后，parser.program()得到抽象语法树
         tree = parser.program()
+        # 传入初始符号表
         self.AST = Program(self.symbol_table)
-
         child_count = tree.getChildCount()
+        # 对AST进行遍历，依次build每个孩子节点
         for i in range(child_count):
-            # print(i, i)
             self.AST.add_statement(self.build_statement(tree.getChild(i)))
-
         return self.AST
 
     def build_statement(self, tree):
         if tree.getChildCount() == 0:
             raise RuntimeError("Invalid Statement: '{}'".format(tree.getText()))
-        token = tree.getChild(0).getPayload()
+        token = tree.getChild(0).getPayload()   # getPayload()得到的是一个token或是一个子树
+        # 如果是token，则对应如下若干statement
+        # break
         if isinstance(token, Token) and token.type == CXLexer.BREAK:
             token1 = tree.getChild(1).getPayload()
             if token.type == CXLexer.BREAK:
                 if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                     return BreakStatement(self.symbol_table)
+                # 如果break后没有紧跟分号则报错
                 else:
-                    RuntimeError("Wrong Break statement, error: '{}'".format(tree.getText()))
+                    raise RuntimeError("Wrong Break Statement, error: '{}'".format(tree.getText()))
+        # continue
         if isinstance(token, Token) and token.type == CXLexer.CONTINUE:
             token1 = tree.getChild(1).getPayload()
             if isinstance(token1, Token) and token1.type == CXLexer.SEMICOLON:
                 return ContinueStatement(self.symbol_table)
             else:
-                RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
+                raise RuntimeError("Wrong Continue Statement, error: '{}'".format(tree.getText()))
+        # read
         if isinstance(token, Token) and token.type == CXLexer.READ:
             token1 = tree.getChild(1).getPayload()
             if isinstance(token1, Token) and token1.type == CXLexer.IDENTIFIER:
@@ -85,69 +90,72 @@ class ASTBuilder:
                 if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
                     return self.build_read_statement(tree)
                 else:
-                    RuntimeError("Wrong Read statement, error: '{}'".format(tree.getText()))
+                    raise RuntimeError("Wrong Read Statement, error: '{}'".format(tree.getText()))
             else:
-                RuntimeError("Wrong Read statement, error: '{}'".format(tree.getText()))
+                raise RuntimeError("Wrong Read Statement, error: '{}'".format(tree.getText()))
+        # write, writeln
         if isinstance(token, Token) and token.type == CXLexer.WRITE:
             token2 = tree.getChild(2).getPayload()
             if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
                 return self.build_write_statement(tree)
             else:
-                RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
+                raise RuntimeError("Wrong Write Statement, error: '{}'".format(tree.getText()))
         if isinstance(token, Token) and token.type == CXLexer.WRITELN:
             token2 = tree.getChild(2).getPayload()
             if isinstance(token2, Token) and token2.type == CXLexer.SEMICOLON:
                 return self.build_writeln_statement(tree)
             else:
-                RuntimeError("Wrong Continue statement, error: '{}'".format(tree.getText()))
+                raise RuntimeError("Wrong Writeln Statement, error: '{}'".format(tree.getText()))
+        # 根据语法定义，不满足以上条件，子树数超过2，则为赋值语句
         if tree.getChildCount() >= 2:
             token1 = tree.getChild(1).getPayload()
             if isinstance(token1, Token) and token1.type == CXLexer.IDENTIFIER:
                 return self.build_define_statement(tree)
+        # 不满足以上条件，则需要再往下递归一层
         tree = tree.getChild(0)
         token = tree.getChild(0).getPayload()
         if isinstance(token, Token) and token.type == CXLexer.LEFTBRACE:
             # 遇见左大括号，那么生成复合语句
             return self.build_compound_statement(tree)
+        # while
         elif isinstance(token, Token) and token.type == CXLexer.WHILE:
             return self.build_while_statement(tree)
+        # for
         elif isinstance(token, Token) and token.type == CXLexer.FOR:
             return self.build_for_statement(tree)
+        # if
         elif isinstance(token, Token) and token.type == CXLexer.IF:
             return self.build_ifelse_statement(tree)
+        # do while
         elif isinstance(token, Token) and token.type == CXLexer.DO:
             return self.build_dowhile_statement(tree)
+        # repeat until
         elif isinstance(token, Token) and token.type == CXLexer.REPEAT:
             return self.build_repeatuntil_statement(tree)
+        # expression
         else:
             return self.build_expression_statement(tree)
 
+    # expression? ;
     def build_expression_statement(self, tree):
-        if tree.getChildCount() == 2:
-            return self.build_expression(tree.getChild(0))
-
-    # TODO: do while, while, for, break, continue, repeat until, read
-    def build_expression(self, tree):
-        return self.build_assignment_expression(tree.getChild(0))
-
-    def build_variable_expression(self, tree):
-        # 处理变量语句
         if tree.getChildCount() == 1:
-            # 只有一个孩子，说明是直接调用的，去符号表中找
-            identifier = tree.getChild(0).getText()
-            symbol = self.symbol_table.get_symbol(identifier)
-            return VariableCallExpression(symbol)
+            return EmptyStatement()
         elif tree.getChildCount() == 2:
-            # 变量声明语句
-            basetype = self.build_type(tree.getChild(0))
-            identifier = tree.getChild(1).getText()
-            # Register in Symbol Table
-            symbol = self.symbol_table.register_symbol(identifier, basetype)
-            return VariableDefineExpression(symbol)
+            return self.build_expression(tree.getChild(0))
         else:
-            raise RuntimeError("Invalid Variable Expression: '" + tree.getText() + "'")
+            raise RuntimeError("Wrong Expression Statement, error: '{}'".format(tree.getText()))
 
+    # expression
+    def build_expression(self, tree):
+        # 子树数为1，往下一层做assign
+        if tree.getChildCount() == 1:
+            return self.build_assignment_expression(tree.getChild(0))
+        else:
+            raise RuntimeError("Wrong Expression, error: '{}'".format(tree.getText()))
+
+    # 赋值语句
     def build_assignment_expression(self, tree):
+        # 子树数为1，往下一层做条件语句
         if tree.getChildCount() == 1:
             return self.build_condition_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
@@ -159,129 +167,84 @@ class ASTBuilder:
         # 将identifier和"值"传入AssignmentExpression
         identifier = tree.getChild(0).getText()
         symbol = self.symbol_table.get_symbol(identifier)
+        # 从符号表中获取该变量
         call_var = VariableCallExpression(symbol)
-        # AssignExpression(define, self.build_expression(tree.getChild(3)))
+        # 对变量赋值
         return AssignExpression(call_var, self.build_expression(tree.getChild(2)))
 
+    # 条件语句
     def build_condition_expression(self, tree):
+        # 往下做逻辑或
         if tree.getChildCount() == 1:
             return self.build_logic_or_expression(tree.getChild(0))
-
-    def build_define_statement(self, tree):
-        basetype = tree.getChild(0).getText()
-        if basetype == "bool":
-            basetype = BooleanType()
-        elif basetype == "int":
-            basetype = IntegerType()
-        elif basetype == "real":
-            basetype = RealType()
-        identifier = tree.getChild(1).getText()
-        # Register in Symbol Table
-        symbol = self.symbol_table.register_symbol(identifier, basetype)
-        define_var = VariableDefineExpression(symbol)
-        if tree.getChildCount() == 3:
-            return AssignExpression(define_var, ConstantExpression(0, "int"))
         else:
-            return AssignExpression(define_var, self.build_expression(tree.getChild(3)))
+            raise RuntimeError("Wrong Condition Expression, error: '{}'".format(tree.getText()))
 
-    def build_negative_expression(self, tree):
-        if tree.getChildCount() != 2:
-            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
-
-        token = tree.getChild(0).getPayload()
-        if not isinstance(token, Token) or token.type != CXLexer.MINUS:
-            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
-
-        return NegativeExpression(self.build_expression(tree.getChild(1)))
-
-    def build_not_expression(self, tree):
-        if tree.getChildCount() != 2:
-            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
-
-        token = tree.getChild(0).getPayload()
-        if not isinstance(token, Token) or token.type != CXLexer.NOT:
-            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
-
-        return NotExpression(self.build_expression(tree.getChild(1)))
-
-    def build_odd_expression(self, tree):
-        if tree.getChildCount() != 2:
-            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
-
-        token = tree.getChild(0).getPayload()
-        if not isinstance(token, Token) or token.type != CXLexer.ODD:
-            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
-
-        return OddExpression(self.build_expression(tree.getChild(1)))
-
+    # 逻辑或
     def build_logic_or_expression(self, tree):
+        # 向下做逻辑与
         if tree.getChildCount() == 1:
             return self.build_logic_and_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic Or Expression: '" + tree.getText() + "'")
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token):
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic Or Expression: '" + tree.getText() + "'")
 
         left_expression = self.build_logic_or_expression(tree.getChild(0))
         right_expression = self.build_logic_and_expression(tree.getChild(2))
-
         if token.type == CXLexer.OR:
             return LogicExpression(left_expression, right_expression, "||")
         else:
             raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
 
+    # 逻辑与
     def build_logic_and_expression(self, tree):
+        # 向下做逻辑异或
         if tree.getChildCount() == 1:
             return self.build_logic_xor_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic And Expression: '" + tree.getText() + "'")
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token):
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic And Expression: '" + tree.getText() + "'")
 
         left_expression = self.build_logic_and_expression(tree.getChild(0))
         right_expression = self.build_logic_xor_expression(tree.getChild(2))
-
         if token.type == CXLexer.AND:
             return LogicExpression(left_expression, right_expression, "&&")
-        elif token.type == CXLexer.OR:
-            return LogicExpression(left_expression, right_expression, "||")
-        elif token.type == CXLexer.XOR:
-            return LogicExpression(left_expression, right_expression, "^")
         else:
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic And Expression: '" + tree.getText() + "'")
 
+    # 逻辑异或
     def build_logic_xor_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_equal_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic Xor Expression: '" + tree.getText() + "'")
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token):
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic Xor Expression: '" + tree.getText() + "'")
 
         left_expression = self.build_logic_xor_expression(tree.getChild(0))
         right_expression = self.build_equal_expression(tree.getChild(2))
-
         if token.type == CXLexer.XOR:
             return LogicExpression(left_expression, right_expression, "^")
         else:
-            raise RuntimeError("Invalid LogicExpression: '" + tree.getText() + "'")
+            raise RuntimeError("Invalid Logic Xor Expression: '" + tree.getText() + "'")
 
+    # 相等或不等
     def build_equal_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_comparison_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
-
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token):
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
 
         left_expression = self.build_equal_expression(tree.getChild(0))
         right_expression = self.build_comparison_expression(tree.getChild(2))
-
         if token.type == CXLexer.EQUAL:
             return ComparisonExpression(left_expression, right_expression, "==")
         elif token.type == CXLexer.NOTEQUAL:
@@ -289,7 +252,9 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
 
+    # 不等关系
     def build_comparison_expression(self, tree):
+        # 往下加减
         if tree.getChildCount() == 1:
             return self.build_additive_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
@@ -298,10 +263,8 @@ class ASTBuilder:
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token):
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
-
         left_expression = self.build_comparison_expression(tree.getChild(0))
         right_expression = self.build_additive_expression(tree.getChild(2))
-
         if token.type == CXLexer.LESSTHAN:
             return ComparisonExpression(left_expression, right_expression, "<")
         elif token.type == CXLexer.GREATERTHAN:
@@ -313,7 +276,9 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid ComparisonExpression: '" + tree.getText() + "'")
 
+    # 加减
     def build_additive_expression(self, tree):
+        # 往下乘除模
         if tree.getChildCount() == 1:
             return self.build_multiplicative_expression(tree.getChild(0))
         if tree.getChildCount() != 3:
@@ -326,7 +291,6 @@ class ASTBuilder:
         # 双目运算，先递归得到左右两个expression
         left_expression = self.build_additive_expression(tree.getChild(0))
         right_expression = self.build_multiplicative_expression(tree.getChild(2))
-
         if token.type == CXLexer.PLUS:
             return ArithmeticExpression(left_expression, right_expression, "+")
         elif token.type == CXLexer.MINUS:
@@ -334,6 +298,7 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid ArithmeticExpression: '" + tree.getText() + "'")
 
+    # 乘除模
     def build_multiplicative_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_cast_expression(tree.getChild(0))
@@ -347,20 +312,16 @@ class ASTBuilder:
         # 双目运算，先递归得到左右两个expression
         left_expression = self.build_multiplicative_expression(tree.getChild(0))
         right_expression = self.build_cast_expression(tree.getChild(2))
-
         if token.type == CXLexer.STAR:
             return ArithmeticExpression(left_expression, right_expression, "*")
         elif token.type == CXLexer.SLASH:
             return ArithmeticExpression(left_expression, right_expression, "/")
-        elif token.type == CXLexer.PLUS:
-            return ArithmeticExpression(left_expression, right_expression, "+")
-        elif token.type == CXLexer.MINUS:
-            return ArithmeticExpression(left_expression, right_expression, "-")
         elif token.type == CXLexer.MOD:
             return ArithmeticExpression(left_expression, right_expression, "%")
         else:
             raise RuntimeError("Invalid ArithmeticExpression: '" + tree.getText() + "'")
 
+    # 类型转换
     def build_cast_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_postfix_expression(tree.getChild(0))
@@ -371,6 +332,7 @@ class ASTBuilder:
             else:
                 raise RuntimeError("Only support cast for int and real yet, now: {}".format(tree.getChild(1).getText()))
 
+    # ++/--
     def build_postfix_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_unary_expression(tree.getChild(0))
@@ -383,6 +345,7 @@ class ASTBuilder:
             else:
                 raise RuntimeError("No such: {} incremental operation".format(tree.getText()))
 
+    # 单目运算-/odd/not ...
     def build_unary_expression(self, tree):
         if tree.getChildCount() == 1:
             return self.build_base_expression(tree.getChild(0))
@@ -397,6 +360,7 @@ class ASTBuilder:
             else:
                 raise RuntimeError("Not supported {} yet".format(tree.getText()))
 
+    # identifier/constant/(expression)
     def build_base_expression(self, tree):
         if tree.getChildCount() == 1:
             token = tree.getChild(0).getPayload()
@@ -409,9 +373,54 @@ class ASTBuilder:
         elif tree.getChildCount() == 3:
             token = tree.getChild(0).getPayload()
             if isinstance(token, Token) and token.type == CXLexer.LEFTPARENTHESIS:
-                # print(tree.getChild(1).getText())
                 return self.build_expression(tree.getChild(1))
 
+    # 变量声明
+    def build_define_statement(self, tree):
+        basetype = tree.getChild(0).getText()
+        if basetype == "bool":
+            basetype = BooleanType()
+        elif basetype == "int":
+            basetype = IntegerType()
+        elif basetype == "real":
+            basetype = RealType()
+        identifier = tree.getChild(1).getText()
+        # 在符号表中注册
+        symbol = self.symbol_table.register_symbol(identifier, basetype)
+        define_var = VariableDefineExpression(symbol)
+        if tree.getChildCount() == 3:
+            return AssignExpression(define_var, ConstantExpression(0, "int"))
+        else:
+            return AssignExpression(define_var, self.build_expression(tree.getChild(3)))
+
+    # -语句
+    def build_negative_expression(self, tree):
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.MINUS:
+            raise RuntimeError("Invalid NegativeExpression: '" + tree.getText() + "'")
+        return NegativeExpression(self.build_expression(tree.getChild(1)))
+
+    # not语句
+    def build_not_expression(self, tree):
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.NOT:
+            raise RuntimeError("Invalid NotExpression: '" + tree.getText() + "'")
+        return NotExpression(self.build_expression(tree.getChild(1)))
+
+    # 判断奇偶
+    def build_odd_expression(self, tree):
+        if tree.getChildCount() != 2:
+            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
+        token = tree.getChild(0).getPayload()
+        if not isinstance(token, Token) or token.type != CXLexer.ODD:
+            raise RuntimeError("Invalid OddExpression: '" + tree.getText() + "'")
+        return OddExpression(self.build_expression(tree.getChild(1)))
+
+    # 常量
     def build_constant_expression(self, tree):
         if tree.getChildCount() != 1:
             raise RuntimeError("Invalid ConstantExpression: '{}'".format(tree.getText()))
@@ -430,67 +439,53 @@ class ASTBuilder:
         else:
             raise RuntimeError("Invalid ConstantExpression: '" + tree.getText() + "'")
 
+    # 大括号包围的复合语句
     def build_compound_statement(self, tree):
         tree = tree.getChild(0)
-        # print(tree.getChildCount())
         if tree.getChildCount() < 2:
             raise RuntimeError("Invalid compound statement: '" + tree.getText() + "'")
-        # expects an RBRACE at the end
         token = tree.getChild(tree.getChildCount() - 1).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTBRACE:
             raise RuntimeError("Invalid compound statement: '" + tree.getText() + "'")
-        # Open Scope
+        # 复合语句会开启一个新作用域(scope)
         self.symbol_table.open_scope()
-        # Create list with statements
-        statements = []
-        for i in range(1, tree.getChildCount()-1):
-            statements.append(self.build_statement(tree.getChild(i)))
-
-        # statements = [self.build_statement(tree.getChild(i)) for i in range(1, tree.getChildCount()-1)]
-        # Get the used space in this compound statement
-        usedSpace = self.symbol_table.get_allocated_space()
-        # Close Scope
+        statements = [self.build_statement(tree.getChild(i)) for i in range(1, tree.getChildCount()-1)]
+        # 退出当前作用域
         self.symbol_table.close_scope()
         return CompoundStatement(statements)
 
+    # while循环
     def build_while_statement(self, tree):
-        """Build While Statement"""
         if tree.getChildCount() != 5:
             raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
-
-        # Check if WHILE at front
+        # While在最前面
         token = tree.getChild(0).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.WHILE:
             raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
-
-        # Check if LPAREN at front
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
             raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
-
-        # Check if RPAREN at end
         token = tree.getChild(3).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
             raise RuntimeError("Invalid While statement: '" + tree.getText() + "'")
 
-        # build the statement
+        # 进入循环，开启新作用域
         self.symbol_table.open_scope()
         statement = self.build_compound_statement(tree.getChild(4))
         self.symbol_table.close_scope()
-
         return WhileStatement(self.build_expression(tree.getChild(2)), statement, self.symbol_table)
 
+    # for循环
     def build_for_statement(self, tree):
         if tree.getChildCount() < 6:
             raise RuntimeError("invalid FOR statement: '" + tree.getText() + "'")
         token = tree.getChild(0).getPayload()
+        # for开头
         if not isinstance(token, Token) or token.type != CXLexer.FOR:
             raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
-        # Check if LPAREN at front
         token = tree.getChild(1).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
             raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
-        # Check for RPAREN
         token = tree.getChild(tree.getChildCount() - 2).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
             raise RuntimeError("Invalid FOR statement: '" + tree.getText() + "'")
@@ -521,14 +516,13 @@ class ASTBuilder:
                 else:
                     update_expression = self.build_expression(tree.getChild(child_index))
                 child_index += 1
-        # build statement
         self.symbol_table.open_scope()
         statement = self.build_compound_statement(tree.getChild(tree.getChildCount() - 1))
         self.symbol_table.close_scope()
         return ForStatement(init_expression, check_expression, update_expression, statement, self.symbol_table)
 
     def build_ifelse_statement(self, tree):
-        # 先检查
+        # 先检查是否符合if-else语法
         if tree.getChildCount() < 5:
             raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
         token = tree.getChild(0).getPayload()
@@ -540,10 +534,9 @@ class ASTBuilder:
         token = tree.getChild(3).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.RIGHTPARENTHESIS:
             raise RuntimeError("Invalid IF statement: '" + tree.getText() + "'")
+        # 只有if，没有else
         if tree.getChildCount() == 5:
-            # Done, no else clause
             token = tree.getChild(4).getPayload()
-            # Build statement
             statement = None
             if token.getText() != ';':
                 self.symbol_table.open_scope()
@@ -551,85 +544,78 @@ class ASTBuilder:
                 self.symbol_table.close_scope()
             return IfStatement(self.build_expression(tree.getChild(2)), statement, None, self.symbol_table)
 
-        # we're going on with the else clause, but then we're expecting 7 children
+        # 有else
         if tree.getChildCount() != 7:
             raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
 
-        # Build statement
         self.symbol_table.open_scope()
-        # print(self.symbol.scope.get_total_allocated())
         statement = self.build_compound_statement(tree.getChild(4))
         self.symbol_table.close_scope()
-
-        alternativeStatement = None
-        # Check if else clause are statements or if it is another if clause
+        # else后的statement
+        alternative_statement = None
+        # else中可能又嵌套一个if-else
         if tree.getChild(6).getChildCount() > 0:
             token = tree.getChild(6).getChild(0).getPayload()
             if isinstance(token, Token) and token.type == CXLexer.IF:
-                # another if clause
-                alternativeStatement = self.build_ifelse_statement(tree.getChild(6))
+                # 又是一个if语句
+                alternative_statement = self.build_ifelse_statement(tree.getChild(6))
             else:
-                # Build alternative statement
+                # 处理else的语句
                 self.symbol_table.open_scope()
-                alternativeStatement = self.build_compound_statement(tree.getChild(6))
+                alternative_statement = self.build_compound_statement(tree.getChild(6))
                 self.symbol_table.close_scope()
 
-        # Check if ELSE at end
         token = tree.getChild(5).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.ELSE:
             raise RuntimeError("Invalid IFELSE statement: '" + tree.getText() + "'")
 
-        return IfStatement(self.build_expression(tree.getChild(2)), statement, alternativeStatement, self.symbol_table)
+        return IfStatement(self.build_expression(tree.getChild(2)), statement, alternative_statement, self.symbol_table)
 
     def build_dowhile_statement(self, tree):
         if tree.getChildCount() != 7:
             raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
-        # Check if DO at front
+        # Do开头
         token = tree.getChild(0).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.DO:
             raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
         token = tree.getChild(2).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.WHILE:
             raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
-        # Check if LPAREN
         token = tree.getChild(3).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
             raise RuntimeError("Invalid DOWhile statement: '" + tree.getText() + "'")
 
-        # build the statement
         self.symbol_table.open_scope()
         statement = self.build_compound_statement(tree.getChild(1))
         self.symbol_table.close_scope()
-
         return DoWhileStatement(self.build_expression(tree.getChild(4)), statement, self.symbol_table)
 
     def build_repeatuntil_statement(self, tree):
         if tree.getChildCount() != 7:
             raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
-        # Check if DO at front
+        # Repeat开头
         token = tree.getChild(0).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.REPEAT:
             raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
         token = tree.getChild(2).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.UNTIL:
             raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
-        # Check if LPAREN
         token = tree.getChild(3).getPayload()
         if not isinstance(token, Token) or token.type != CXLexer.LEFTPARENTHESIS:
             raise RuntimeError("Invalid repeatuntil statement: '" + tree.getText() + "'")
 
-        # build the statement
         self.symbol_table.open_scope()
         statement = self.build_compound_statement(tree.getChild(1))
         self.symbol_table.close_scope()
-
         return RepeatUntilStatement(self.build_expression(tree.getChild(4)), statement, self.symbol_table)
 
+    # read语句，identifer读入值
     def build_read_statement(self, tree):
         identifier = tree.getChild(1).getText()
         symbol = self.symbol_table.get_symbol(identifier)
         return ReadStatement(VariableCallExpression(symbol))
 
+    # write
     def build_write_statement(self, tree):
         write_expr = self.build_expression(tree.getChild(1))
         return WriteStatement(write_expr, "write")
@@ -638,13 +624,29 @@ class ASTBuilder:
         write_expr = self.build_expression(tree.getChild(1))
         return WriteStatement(write_expr, "writeln")
 
+    def build_variable_expression(self, tree):
+        # 处理变量语句
+        if tree.getChildCount() == 1:
+            # 只有一个孩子，说明是直接调用的，去符号表中找
+            identifier = tree.getChild(0).getText()
+            symbol = self.symbol_table.get_symbol(identifier)
+            return VariableCallExpression(symbol)
+        elif tree.getChildCount() == 2:
+            # 变量声明语句
+            basetype = self.build_type(tree.getChild(0))
+            identifier = tree.getChild(1).getText()
+            # 在符号表中注册
+            symbol = self.symbol_table.register_symbol(identifier, basetype)
+            return VariableDefineExpression(symbol)
+        else:
+            raise RuntimeError("Invalid Variable Expression: '" + tree.getText() + "'")
+
+    # 设置类型，bool/int/real
     def build_type(self, tree):
         if tree.getChildCount() == 1:
             token = tree.getChild(0).getPayload()
-
             if not isinstance(token, Token):
                 raise RuntimeError("Invalid type identifier: '{}'".format(tree.getChild(0).getText()))
-
             # 仅支持bool和int
             if token.type == CXLexer.IDENTIFIER:
                 if tree.getChild(0).getText() == "bool":

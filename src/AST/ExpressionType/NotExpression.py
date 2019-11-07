@@ -24,5 +24,4 @@ class NotExpression(Expression):
     def serialize(self, level):
         output = padding(level) + "NotExpression\n"
         output += self.expression.serialize(level + 1)
-
         return output

@@ -20,6 +20,7 @@ class OddExpression(Expression):
     def __str__(self):
         return "odd" + str(self.expression)
 
+    # 判断奇偶，即%2后是否等于1，等于1则为奇，否则为偶
     def compile(self):
         mod_compiled = ArithmeticExpression(self.expression, ConstantExpression(2, "int"), "%")
         code = ComparisonExpression(mod_compiled, ConstantExpression(1, "int"), "==").compile()
@@ -28,5 +29,4 @@ class OddExpression(Expression):
     def serialize(self, level):
         output = padding(level) + "NegateExpression\n"
         output += self.expression.serialize(level + 1)
-
         return output

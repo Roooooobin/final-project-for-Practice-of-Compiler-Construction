@@ -29,7 +29,6 @@ class ComparisonExpression(Expression):
         code = self.left_expression.compile()
         code += self.right_expression.compile()
         code += operations[self.operation] + " " + self.left_expression.basetype.get_pcode() + "\n"
-
         return code
 
     def serialize(self, level):

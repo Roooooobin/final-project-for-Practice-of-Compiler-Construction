@@ -17,14 +17,14 @@ class DecrementExpression(Expression):
     def __str__(self):
         return str(self.variable) + "--"
 
+    # 因为Pmachine对于自增自减是原地执行，所以会影响后续操作，做完后str一下
     def compile(self):
-        output = self.variable.compile()
-        output += "dec " + self.basetype.get_pcode() + " 1\n"
-        output += self.variable.compile().replace("lod", "str")
-        return output
+        code = self.variable.compile()
+        code += "dec " + self.basetype.get_pcode() + " 1\n"
+        code += self.variable.compile().replace("lod", "str")
+        return code
 
     def serialize(self, level):
         output = padding(level) + "DecrementExpression\n"
         output += self.variable.serialize(level + 1)
-
         return output

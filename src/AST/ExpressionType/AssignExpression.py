@@ -26,6 +26,7 @@ class AssignExpression(Expression):
                                .format(self.variable.basetype, self.expression.basetype))
 
         code = self.expression.compile()
+        # 声明或调用
         if type(self.variable) is VariableDefineExpression or type(self.variable) is VariableCallExpression:
             code += "str {} 0 {}\n".format(self.variable.symbol.basetype.get_pcode(), self.variable.symbol.address)
         else:

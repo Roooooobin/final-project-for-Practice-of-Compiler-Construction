@@ -15,19 +15,9 @@ class ArithmeticExpression(Expression):
         self.operation = operation
         self.left_expression = left_expression
         self.right_expression = right_expression
-        # Determine the type of the expression
-        # check if types of 2 expressions are the same
+        # 判断运算符左右的类型是否相同，不支持real和int混合运算，提供强制转换符
         if self.left_expression.basetype != self.right_expression.basetype:
             raise RuntimeError("The two types of the expressions in the arithmetic expression should be the same")
-
-        # if not isinstance(self.left_expression.basetype, IntegerType):
-        #     raise RuntimeError("Left side of arithmetic expression should be an integer but now it is a: "
-        #                        + str(type(self.left_expression.basetype)))
-        #
-        # if not isinstance(self.right_expression.basetype, IntegerType):
-        #     raise RuntimeError("Right side of arithmetic expression should be an integer but now it is a: "
-        #                        + str(type(self.right_expression.basetype)))
-        # set the type of this expression
         self.basetype = self.left_expression.basetype
 
     def __str__(self):
