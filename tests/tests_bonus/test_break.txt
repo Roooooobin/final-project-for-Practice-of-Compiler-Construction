@@ -1,0 +1,8 @@
+int x = 1;
+while(x < 3){
+    if(x == 1){
+        break;
+    }
+    x = x * 2;
+}
+writeln x;

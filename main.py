@@ -4,18 +4,22 @@
 # @Author  : Robin
 # @Time    : 2019/10/27 13:32
 """
-
-
+import os
 from src.ASTBuilder import ASTBuilder
 from src.SymbolTable.SymbolTable import SymbolTable
 
+basics = ["arithmetic", "bool", "if", "read_write", "while"]
+bonus = ["break", "continue", "dowhile", "for", "odd", "real", "repeatuntil", "xor"]
+required = ["factorial", "LCM", "prime numbers"]
+
 if __name__ == "__main__":
-    file = r"C:\Users\robin\Desktop\CX_compiler\tests\test1.txt"
+    test_basic_path = os.getcwd() + r"\tests\tests_basic\test_" + basics[0] + ".txt"
+    test_bonus_path = os.getcwd() + r"\tests\tests_bonus\test_" + bonus[0] + ".txt"
+    test_required_path = os.getcwd() + r"\tests\tests_required\test_" + required[0] + ".txt"
     symbol_table = SymbolTable()
-    ast = ASTBuilder(file, symbol_table)
+    ast = ASTBuilder(test_basic_path, symbol_table)
     ast = ast.build()
-    # print(ast.statements[0].variable)
     compiled_codes = ast.compile()
-    file_path_output = r"C:\Users\robin\Desktop\CX_compiler\tests\1.p"
-    file_output = open(file_path_output, "w")
-    print(compiled_codes, file=file_output)
+    output_path = r"C:\Users\robin\Desktop\CX_compiler\tests\out.p"
+    output_file = open(output_path, "w")
+    print(compiled_codes, file=output_file)

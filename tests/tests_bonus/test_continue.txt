@@ -1,0 +1,11 @@
+int x = 1;
+int y = 1;
+while(y <= 1){
+    y++;
+    if(x == 1){
+        continue;
+    }
+    x++;
+}
+writeln x;
+writeln y;

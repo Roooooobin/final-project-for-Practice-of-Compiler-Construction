@@ -24,9 +24,6 @@ class Program(Node):
         if not self.statements:
             return "hlt\n"
 
-        # 类似于c语言的初始代码
-        # init_codes = ["mst 0", "cup 0 init", "init:", "ssp 5", "mst 0", "cup 0 main0", "hlt\n", "main0:", "ssp 15"]
-        # codes = "\n".join(init_codes)
         codes = "ssp 15\n"
         # print(self.statements)
         for stmt in self.statements:

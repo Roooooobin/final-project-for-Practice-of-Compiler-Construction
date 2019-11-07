@@ -1,0 +1,7 @@
+int x;
+int sum = 0;
+for(x=1; x<=3; x++){
+    sum = sum + x;
+}
+writeln x;
+writeln sum;

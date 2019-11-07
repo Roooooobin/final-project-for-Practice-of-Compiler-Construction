@@ -1,0 +1,9 @@
+int x = 0;
+bool flag = false;
+if(flag){
+    x++;
+}
+else{
+    x--;
+}
+write x;

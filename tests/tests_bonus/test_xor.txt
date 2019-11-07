@@ -1,0 +1,12 @@
+int x = 1;
+int y = 1;
+if(x > 1 ^ y < 2){
+    x++;
+    y++;
+}
+else{
+    x--;
+    y--;
+}
+writeln x;
+writeln y;
