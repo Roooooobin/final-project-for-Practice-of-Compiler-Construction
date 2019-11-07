@@ -16,7 +16,7 @@ if __name__ == "__main__":
     test_basic_path = os.getcwd() + r"\tests\tests_basic\test_" + basics[0] + ".txt"
     test_bonus_path = os.getcwd() + r"\tests\tests_bonus\test_" + bonus[0] + ".txt"
     test_required_path = os.getcwd() + r"\tests\tests_required" + "\\" + required[0] + ".txt"
-    path = os.getcwd() + r"\test.txt"
+    test_path = os.getcwd() + r"\test.txt"
     symbol_table = SymbolTable()
     ast = ASTBuilder(test_basic_path, symbol_table)
     ast = ast.build()

@@ -5,7 +5,7 @@
 # @Time    : 2019/11/6 22:28
 """
 from src.AST.Statement import Statement
-from utils import padding
+from src.utils import padding
 
 
 class DoWhileStatement(Statement):

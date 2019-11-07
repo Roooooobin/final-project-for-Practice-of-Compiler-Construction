@@ -5,7 +5,7 @@
 # @Time    : 2019/11/2 8:58
 """
 from src.AST.Statement import Statement
-from utils import padding
+from src.utils import padding
 
 
 class ContinueStatement(Statement):

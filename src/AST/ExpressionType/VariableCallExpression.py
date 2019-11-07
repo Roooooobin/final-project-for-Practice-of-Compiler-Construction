@@ -5,7 +5,7 @@
 # @Time    : 2019/10/31 15:23
 """
 from src.AST.Expression import Expression
-from utils import padding
+from src.utils import padding
 
 
 class VariableCallExpression(Expression):

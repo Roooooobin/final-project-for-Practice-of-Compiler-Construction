@@ -6,7 +6,7 @@
 """
 from src.AST.Statement import Statement
 from src.Types.BooleanType import BooleanType
-from utils import padding
+from src.utils import padding
 
 
 class ForStatement(Statement):

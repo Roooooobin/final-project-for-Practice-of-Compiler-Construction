@@ -8,7 +8,7 @@ from src.AST.Expression import Expression
 from src.Types.BooleanType import BooleanType
 from src.Types.IntegerType import IntegerType
 from src.Types.RealType import RealType
-from utils import padding
+from src.utils import padding
 
 
 class ConstantExpression(Expression):

@@ -5,7 +5,7 @@
 # @Time    : 2019/11/3 10:12
 """
 from src.AST.Expression import Expression
-from utils import padding
+from src.utils import padding
 
 
 class NotExpression(Expression):

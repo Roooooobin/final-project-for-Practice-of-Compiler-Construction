@@ -8,7 +8,7 @@ from src.AST.Expression import Expression
 from src.AST.ExpressionType.ComparisonExpression import ComparisonExpression
 from src.AST.ExpressionType.ConstantExpression import ConstantExpression
 from src.AST.ExpressionType.ArithmeticExpression import ArithmeticExpression
-from utils import padding
+from src.utils import padding
 
 
 class OddExpression(Expression):

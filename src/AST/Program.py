@@ -5,7 +5,7 @@
 # @Time    : 2019/10/30 18:14
 """
 from src.AST.Node import Node
-from utils import padding
+from src.utils import padding
 
 
 class Program(Node):

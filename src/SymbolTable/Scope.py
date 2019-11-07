@@ -4,7 +4,7 @@
 # @Author  : Robin
 # @Time    : 2019/10/30 19:02
 """
-from utils import padding
+from src.utils import padding
 
 
 # 作用域，包括开启新作用域，加入新symbol到作用域等
