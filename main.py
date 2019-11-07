@@ -8,12 +8,12 @@ import os
 from src.ASTBuilder import ASTBuilder
 from src.SymbolTable.SymbolTable import SymbolTable
 
-basics = ["arithmetic", "bool", "if", "read_write", "while"]
+basics = ["and_or", "arithmetic", "bool", "if", "read_write", "while"]
 bonus = ["break", "continue", "dowhile", "for", "odd", "real", "repeatuntil", "xor"]
 required = ["factorial", "LCM", "prime numbers"]
 
 if __name__ == "__main__":
-    test_basic_path = os.getcwd() + r"\tests\tests_basic\test_" + basics[2] + ".txt"
+    test_basic_path = os.getcwd() + r"\tests\tests_basic\test_" + basics[0] + ".txt"
     test_bonus_path = os.getcwd() + r"\tests\tests_bonus\test_" + bonus[0] + ".txt"
     test_required_path = os.getcwd() + r"\tests\tests_required" + "\\" + required[0] + ".txt"
     path = os.getcwd() + r"\test.txt"

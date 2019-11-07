@@ -1,0 +1,17 @@
+int x = 1;
+if(true && false){
+    x++;    // x++
+}
+else{
+    if(true || false){
+        x = x * 2;
+    }
+    else{
+        x--;    // x--
+    }
+}
+write x;
+
+/*
+test && ||
+*/
